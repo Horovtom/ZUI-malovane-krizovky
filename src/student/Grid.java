@@ -12,12 +12,46 @@ public class Grid {
     private static final Logger LOGGER = Logger.getLogger(Grid.class.getName());
     private LeftClues leftClues;
     private UpperClues upperClues;
-    private char[][] grid;
+    private GridField[][] grid;
 
     public Grid(LeftClues leftClues, UpperClues upperClues) {
         this.leftClues = leftClues;
         this.upperClues = upperClues;
-        grid = new char[leftClues.size()][upperClues.size()];
+        init();
+    }
+
+    private void init() {
+        grid = new GridField[leftClues.size()][upperClues.size()];
+        for (int i = 0; i < leftClues.size(); i++) {
+            for (int u = 0; u < upperClues.size(); u++) {
+                grid[i][u] = new GridField();
+            }
+        }
+    }
+
+    private void setCompletedAsLocked() {
+        for (int i = 0; i < grid.length; i++) {
+            setCompletedAsLockedRow(i);
+        }
+        for (int i = 0; i < grid[0].length; i++) {
+            setCompletedAsLockedCol(i);
+        }
+    }
+
+    /**
+     * Used by
+     * {@link #setCompletedAsLocked()}
+     */
+    private void setCompletedAsLockedRow(int row) {
+        //TODO:COMPLETE
+    }
+
+    /**
+     * Used by
+     * {@link #setCompletedAsLocked()}
+     */
+    private void setCompletedAsLockedCol(int col) {
+        //TODO: COMPLETE
     }
 
     /**
@@ -49,7 +83,7 @@ public class Grid {
 
             int currentColoredCell = lastPosition - currClue.getHowMany() + 1;
             if (positions[i] >= currentColoredCell)
-                colorRowBetween(row, positions[i], currentColoredCell, currClue.getColor());
+                colorRowBetween(row, currentColoredCell, positions[i], currClue.getColor());
             lastColor = currClue.getColor();
             lastPosition = currentColoredCell - 1;
         }
@@ -61,7 +95,8 @@ public class Grid {
             return;
         }
         for (int i = start; i <= end; i++) {
-            grid[row][i] = color;
+            grid[row][i].setColor(color);
+            grid[row][i].setLocked(true);
         }
     }
 
@@ -72,7 +107,9 @@ public class Grid {
         }
 
         for (int i = start; i <= end; i++) {
-            grid[i][col] = color;
+            grid[i][col].setColor(color);
+            grid[i][col].setLocked(true);
+
         }
     }
 
@@ -118,19 +155,30 @@ public class Grid {
 
             int currentColoredCell = lastPosition - currClue.getHowMany() + 1;
             if (positions[i] >= currentColoredCell)
-                colorColBetween(col, positions[i], currentColoredCell, currClue.getColor());
+                colorColBetween(col, currentColoredCell, positions[i], currClue.getColor());
             lastColor = currClue.getColor();
             lastPosition = currentColoredCell - 1;
         }
     }
 
     public char getCell(int x, int y) {
-        return grid[y][x];
+        return grid[y][x].getColor();
     }
 
     public void setCell(int x, int y, char color) {
-        grid[y][x] = color;
+        grid[y][x].setColor(color);
     }
 
-
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("Grid{");
+        for (int i = 0; i < grid.length; i++) {
+            sb.append('\n');
+            for (int j = 0; j < grid[0].length; j++) {
+                sb.append(grid[i][j].getColor());
+            }
+        }
+        sb.append('}');
+        return sb.toString();
+    }
 }

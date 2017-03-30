@@ -12,6 +12,6 @@ public class UpperClues extends Clues {
             LOGGER.warning("Trying to access info about a column position that is non-existent yet!");
             return null;
         }
-        return clues.get(column).get(position);
+        return clues.get(column).get(clues.get(column).size() - position - 1);
     }
 }
