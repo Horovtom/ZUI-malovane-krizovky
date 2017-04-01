@@ -37,4 +37,8 @@ public class GridField {
                 ", locked=" + locked +
                 '}';
     }
+
+    public boolean isCross() {
+        return color == '_' && locked;
+    }
 }

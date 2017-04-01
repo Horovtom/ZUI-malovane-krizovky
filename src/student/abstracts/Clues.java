@@ -2,6 +2,7 @@ package student.abstracts;
 import student.ClueField;
 
 import java.util.ArrayList;
+import java.util.StringTokenizer;
 import java.util.logging.Logger;
 
 /**
@@ -13,10 +14,33 @@ public abstract class Clues {
 
     public Clues() {}
 
+    public void addLineOfClues(String input) {
+        StringTokenizer st = new StringTokenizer(input, ",");
 
-    public void addClue(int column, ClueField clue) {
+        clues.add(new ArrayList<>());
+
+        boolean loadingColor = true;
+        char color = 0;
+        while(st.hasMoreTokens()) {
+            if (loadingColor) {
+                color = st.nextToken().charAt(0);
+                loadingColor = false;
+            } else {
+                addClueFront(clues.size() - 1, new ClueField(color, Integer.parseInt(st.nextToken())));
+                loadingColor = true;
+            }
+        }
+    }
+
+
+    public void addClueBack(int column, ClueField clue) {
         if (clues.size() <= column) clues.add(new ArrayList<>());
         clues.get(column).add(clue);
+    }
+
+    public void addClueFront(int column, ClueField clue){
+        if (clues.size() <= column) clues.add(new ArrayList<>());
+        clues.get(column).add(0, clue);
     }
 
     /**

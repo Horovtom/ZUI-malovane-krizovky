@@ -28,4 +28,14 @@ public class ClueField {
     public int getHowMany() {
         return howMany;
     }
+
+    @Override
+    public String toString() {
+        final StringBuffer sb = new StringBuffer("ClueField{");
+        sb.append("color=").append(color);
+        sb.append(", howMany=").append(howMany);
+        sb.append(", done=").append(done);
+        sb.append('}');
+        return sb.toString();
+    }
 }

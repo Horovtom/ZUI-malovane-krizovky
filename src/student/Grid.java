@@ -60,78 +60,77 @@ public class Grid {
      */
     public void generateBounds() {
         for (int i = 0; i < grid.length; i++) {
-            generateBoundsRow(i);
+            generateBounds(false, i);
         }
         for (int i = 0; i < grid[0].length; i++) {
-            generateBoundsCol(i);
+            generateBounds(true, i);
         }
     }
 
     /**
-     * Generates bounds for a specified row... Then it writes it into the grid
+     * Generates bounds for a specified column... Then it writes it into the grid
+     * @param column Whether the specified index is relevant to row or column
      */
-    private void generateBoundsRow(int row) {
-        int[] positions = generatePositionsArray(row, leftClues);
-        char lastColor = 0;
-        int lastPosition = grid[0].length - 1;
+    private void generateBounds(boolean column, int index) {
+        int[] positions = generatePositionsArray(column, index);
+
+        Clues usedClues;
+        if (column) usedClues = upperClues;
+        else usedClues = leftClues;
+
+        int lastColor = 0;
+
+        int lastPosition;
+        if (column) lastPosition = grid.length - 1;
+        else lastPosition = grid[0].length - 1;
+
         for (int i = positions.length - 1; i >= 0; i--) {
-            ClueField currClue = leftClues.getClue(row, i);
+            ClueField currClue = usedClues.getClue(index, i);
             if (i != positions.length - 1) {
                 if (currClue.getColor() == lastColor)
                     lastPosition -= 1;
             }
 
-            int currentColoredCell = lastPosition - currClue.getHowMany() + 1;
+            int currentColoredCell = generateNextPosition(column, lastPosition, index, currClue, true);
             if (positions[i] >= currentColoredCell)
-                colorRowBetween(row, currentColoredCell, positions[i], currClue.getColor());
+                colorBetween(column, index, currentColoredCell, positions[i], currClue.getColor());
             lastColor = currClue.getColor();
             lastPosition = currentColoredCell - 1;
         }
     }
 
-    private void colorRowBetween(int row, int start, int end, char color) {
-        if (start > end) {
-            LOGGER.warning("Start was bigger than end... skipping!");
-            return;
-        }
-        for (int i = start; i <= end; i++) {
-            grid[row][i].setColor(color);
-            grid[row][i].setLocked(true);
-        }
-    }
-
-    private void colorColBetween(int col, int start, int end, char color) {
+    private void colorBetween(boolean column, int index, int start, int end, char color) {
         if (start > end) {
             LOGGER.warning("Start was bigger than end... skipping!");
             return;
         }
 
         for (int i = start; i <= end; i++) {
-            grid[i][col].setColor(color);
-            grid[i][col].setLocked(true);
-
-        }
-    }
-
-    /**
-     * Used with
-     * {@link #generateBoundsCol(int)}
-     * {@link #generateBoundsRow(int)}
-     */
-    private int[] generatePositionsArray(int col, Clues clues) {
-        int[] positions = new int[clues.getClueLength(col)];
-        char lastColor = 0;
-        int lastPosition = 0;
-        for (int i = 0; i < positions.length; i++) {
-            ClueField currClue = clues.getClue(col, i);
-            if (i == 0) {
-                positions[0] = currClue.getHowMany() - 1;
-                lastColor = currClue.getColor();
-                lastPosition = currClue.getHowMany();
+            if (column) {
+                grid[i][index].setColor(color);
+                grid[i][index].setLocked(true);
             } else {
-                lastPosition = currClue.getColor() == lastColor ? lastPosition + 1 : lastPosition;
-                positions[i] = lastPosition + currClue.getHowMany() - 1;
-                lastPosition = positions[i] + 1;
+                grid[index][i].setColor(color);
+                grid[index][i].setLocked(true);
+            }
+        }
+    }
+
+    private int[] generatePositionsArray(boolean column, int index) {
+        Clues cluesUsed = column ? upperClues : leftClues;
+
+        int[] positions = new int[cluesUsed.getClueLength(index)];
+        char lastColor = 0;
+        for (int i = 0; i < positions.length; i++) {
+            ClueField currClue = cluesUsed.getClue(index, i);
+            if (i == 0) {
+                positions[0] = generateNextPosition(column, 0, 0, currClue, false);
+                lastColor = currClue.getColor();
+            } else {
+                positions[i] = generateNextPosition(
+                        column,
+                        currClue.getColor() == lastColor ? positions[i - 1] + 2 : positions[i - 1] + 1,
+                        index, currClue, false);
                 lastColor = currClue.getColor();
             }
         }
@@ -139,26 +138,33 @@ public class Grid {
     }
 
     /**
-     * Generates bounds for a specified column... Then it writes it into the grid
+     * Used by {@link #generatePositionsArray(boolean, int)}
      */
-    private void generateBoundsCol(int col) {
-        int[] positions = generatePositionsArray(col, upperClues);
+    private int generateNextPosition(boolean column, int start, int index, ClueField clue, boolean backwards) {
+        int i = start;
+        int counter = 0;
 
-        int lastColor = 0;
-        int lastPosition = grid.length - 1;
-        for (int i = positions.length - 1; i >= 0; i--) {
-            ClueField currClue = upperClues.getClue(col, i);
-            if (i != positions.length - 1) {
-                if (currClue.getColor() == lastColor)
-                    lastPosition -= 1;
-            }
+        int boundary = column? grid.length : grid[index].length;
+        GridField field;
+        while (i < boundary && counter < clue.getHowMany()) {
+            field = column? grid[i][index] : grid[index][i];
 
-            int currentColoredCell = lastPosition - currClue.getHowMany() + 1;
-            if (positions[i] >= currentColoredCell)
-                colorColBetween(col, currentColoredCell, positions[i], currClue.getColor());
-            lastColor = currClue.getColor();
-            lastPosition = currentColoredCell - 1;
+            if (!field.isCross()) counter++;
+            if (backwards) i--;
+            else i++;
         }
+        if (i > boundary) LOGGER.severe("Couldnt fit this clue into line: " + clue);
+        else if (i < boundary && i >= 0) {
+            field = column ? grid[i][index] : grid[index][i];
+            while (field.getColor() == clue.getColor()) {
+                if (backwards) i--;
+                else i++;
+                if (i == boundary || i < 0) break;
+                field = column ? grid[i][index] : grid[index][i];
+            }
+        }
+        if (backwards) return i + 1;
+        else return i - 1;
     }
 
     public char getCell(int x, int y) {
@@ -167,6 +173,22 @@ public class Grid {
 
     public void setCell(int x, int y, char color) {
         grid[y][x].setColor(color);
+    }
+
+    public String getRowInString(int row) {
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < grid[row].length; i++) {
+            sb.append(grid[row][i].getColor());
+        }
+        return sb.toString();
+    }
+
+    public String getColInString(int col) {
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < grid.length; i++) {
+            sb.append(grid[i][col].getColor());
+        }
+        return sb.toString();
     }
 
     @Override
