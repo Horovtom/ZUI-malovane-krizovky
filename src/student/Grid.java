@@ -8,11 +8,12 @@ import java.util.logging.Logger;
  * Created by Hermes235 on 30.3.2017.
  */
 public class Grid {
-
+    //TODO: Use getField everywhere it can be used.. Namely not used in all generateBounds() stuff
     private static final Logger LOGGER = Logger.getLogger(Grid.class.getName());
     private LeftClues leftClues;
     private UpperClues upperClues;
     private GridField[][] grid;
+    private int width, height;
 
     public Grid(LeftClues leftClues, UpperClues upperClues) {
         this.leftClues = leftClues;
@@ -27,13 +28,42 @@ public class Grid {
                 grid[i][u] = new GridField();
             }
         }
+        height = grid.length;
+        width = grid[0].length;
     }
 
-    private void setCompletedAsLocked() {
+    public void fillObvious() {
         for (int i = 0; i < grid.length; i++) {
+            fillObvious(false, i, false);
+        }
+        for (int i = 0; i < width; i++) {
+            fillObvious(true, i, false);
+        }
+    }
+
+    /**
+     * Used only with {@link #fillObvious()}
+     */
+    private void fillObvious(boolean column, int index, boolean backwards) {
+        int currentCell = backwards? column? width : height : 0;
+        Clues cluesUsed = column? upperClues : leftClues;
+        int clueCounter = backwards? cluesUsed.getClueLength() - 1 : 0;
+        boolean locked = true;
+        
+
+    }
+
+    public GridField getField(boolean column, int rowIndex, int elemIndex) {
+        if (column )return grid[elemIndex][rowIndex];
+        else return grid[rowIndex][elemIndex];
+    }
+
+
+    public void setCompletedAsLocked() {
+        for (int i = 0; i < height; i++) {
             setCompletedAsLockedRow(i);
         }
-        for (int i = 0; i < grid[0].length; i++) {
+        for (int i = 0; i < width; i++) {
             setCompletedAsLockedCol(i);
         }
     }
@@ -59,10 +89,10 @@ public class Grid {
      * Does not take into consideration already placed cells
      */
     public void generateBounds() {
-        for (int i = 0; i < grid.length; i++) {
+        for (int i = 0; i < height; i++) {
             generateBounds(false, i);
         }
-        for (int i = 0; i < grid[0].length; i++) {
+        for (int i = 0; i < width; i++) {
             generateBounds(true, i);
         }
     }
@@ -81,8 +111,8 @@ public class Grid {
         int lastColor = 0;
 
         int lastPosition;
-        if (column) lastPosition = grid.length - 1;
-        else lastPosition = grid[0].length - 1;
+        if (column) lastPosition = height - 1;
+        else lastPosition = width - 1;
 
         for (int i = positions.length - 1; i >= 0; i--) {
             ClueField currClue = usedClues.getClue(index, i);
@@ -144,7 +174,7 @@ public class Grid {
         int i = start;
         int counter = 0;
 
-        int boundary = column? grid.length : grid[index].length;
+        int boundary = column? height : width;
         GridField field;
         while (i < boundary && counter < clue.getHowMany()) {
             field = column? grid[i][index] : grid[index][i];
@@ -185,7 +215,7 @@ public class Grid {
 
     public String getColInString(int col) {
         StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < grid.length; i++) {
+        for (int i = 0; i < height; i++) {
             sb.append(grid[i][col].getColor());
         }
         return sb.toString();
@@ -194,9 +224,9 @@ public class Grid {
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder("Grid{");
-        for (int i = 0; i < grid.length; i++) {
+        for (int i = 0; i < height; i++) {
             sb.append('\n');
-            for (int j = 0; j < grid[0].length; j++) {
+            for (int j = 0; j < width; j++) {
                 sb.append(grid[i][j].getColor());
             }
         }

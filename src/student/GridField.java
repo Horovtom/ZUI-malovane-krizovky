@@ -1,5 +1,7 @@
 package student;
 
+import org.junit.Test;
+
 import java.util.logging.Logger;
 
 /**
@@ -40,5 +42,27 @@ public class GridField {
 
     public boolean isCross() {
         return color == '_' && locked;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null) {
+            return false;
+        } else if (getClass() == o.getClass()) {
+            GridField gridField = (GridField) o;
+
+            return color == gridField.color && locked == gridField.locked;
+        } else if (Character.class == o.getClass()) {
+            char i = (Character) o;
+            return color == i;
+        } else return false;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = (int) color;
+        result = 31 * result + (locked ? 1 : 0);
+        return result;
     }
 }
