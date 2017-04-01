@@ -45,12 +45,54 @@ public class Grid {
      * Used only with {@link #fillObvious()}
      */
     private void fillObvious(boolean column, int index, boolean backwards) {
+        int maximum = column? height : width;
         int currentCell = backwards? column? width : height : 0;
         Clues cluesUsed = column? upperClues : leftClues;
         int clueCounter = backwards? cluesUsed.getClueLength() - 1 : 0;
         boolean locked = true;
-        
+        ClueField currentClue = cluesUsed.getClue(index, clueCounter);
+        int counter = currentClue.getHowMany();
+        GridField currCell = getField(column, index, currentCell);
 
+        if (currCell.isLocked()) {
+            if (currCell.getColor() == currentClue.getColor()) {
+                int offset = 0;
+                while (getField(column, index, currentCell + offset).getColor() == currentClue.getColor() && counter > 0) {
+                    offset = backwards? offset - 1 : offset + 1;
+                    counter--;
+                }
+                while (counter > 0) {
+                    if (getField(column, index, currentCell + offset).getColor() == '_') {
+                        setField(column, index, currentCell + offset, currentClue.getColor());
+                        counter--;
+                    } else {
+                        LOGGER.warning("This cell is already set to: " + getField(column, index, currentCell+offset).getColor() + ", when it should be: " + currentClue.getColor());
+                        return;
+                    }
+                }
+                if (counter == 0) {
+                    char previousColor = currentClue.getColor();
+                    currentClue = cluesUsed.getClue(index, ++clueCounter);
+                    counter = currentClue.getHowMany();
+                    if (currentClue.getColor() == previousColor) {
+                        setField(column, index, currentCell + offset, '_');
+                        currentCell = currentCell + offset + 1;
+                    } else currentCell += offset;
+                    locked = true;
+                }
+
+            } else if (currCell.isCross()) {
+                //Skip all crosses
+                while(currCell.isCross() && currentCell < maximum - 1) currCell = getField(column, index, currentCell + 1);
+
+            }
+        }
+
+    }
+
+    public void setField(boolean column, int index, int i, char color) {
+        if (column) grid[i][index].setColor(color);
+        else grid[index][i].setColor(color);
     }
 
     public GridField getField(boolean column, int rowIndex, int elemIndex) {
