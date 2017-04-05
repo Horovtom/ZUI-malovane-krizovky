@@ -263,16 +263,20 @@ public class Grid {
         boolean changed = false;
         for (int i = 0; i < grid.length; i++) {
             if (leftClues.isComplete(i)) continue;
-            changed = crossCompleted(true, i, false) || changed;
-            changed = crossCompleted(true, i, true) || changed;
+            changed = crossCompleted(false, i, false) || changed;
+            changed = crossCompleted(false, i, true) || changed;
         }
 
         for (int i = 0; i < grid[0].length; i++) {
             if (upperClues.isComplete(i)) continue;
-            changed = crossCompleted(false, i, false) || changed;
-            changed = crossCompleted(false, i, true) || changed;
+            changed = crossCompleted(true, i, false) || changed;
+            changed = crossCompleted(true, i, true) || changed;
         }
         return changed;
+    }
+
+    public boolean isCross(int x, int y) {
+        return grid[y][x].isCross();
     }
 
     private boolean crossCompleted(boolean column, int index, boolean backwards) {
@@ -281,9 +285,9 @@ public class Grid {
         int increment = backwards ? -1 : 1;
         GridField currentField;
         Clues cluesUsed = column ? upperClues : leftClues;
-        int oldFieldCounter = 0;
+        int oldFieldCounter = backwards ? column ? grid.length - 1 : grid[0].length - 1 : 0;
         int fieldCounter = backwards ? column ? grid.length - 1 : grid[0].length - 1 : 0;
-        int clueCounter = backwards ? cluesUsed.getClueLength() - 1 : 0;
+        int clueCounter = backwards ? cluesUsed.getClueLength(index) - 1 : 0;
         ClueField currentClue = cluesUsed.getClue(index, clueCounter);
         boolean stuffed = true;
 
@@ -297,6 +301,7 @@ public class Grid {
             }
         }
 
+        oldFieldCounter = fieldCounter;
         fieldCounter = findNextSpaceForClue(column, index, backwards, fieldCounter, currentClue);
         if (fieldCounter == -1) {
             LOGGER.severe("Unsolvable, not enough space for next clue...");
@@ -316,7 +321,7 @@ public class Grid {
                     clueCounter += increment;
                     currentClue = cluesUsed.getClue(index, clueCounter);
                     if (currentClue == null) break;
-                    fieldCounter += currentClue.getHowMany();
+                    fieldCounter += currentClue.getHowMany() * increment;
                     fieldCounter = findNextSpaceForClue(column, index, backwards, fieldCounter, currentClue);
                 } else if (currentField.getColor() == '_') stuffed = false;
                 else {
@@ -328,11 +333,13 @@ public class Grid {
                     int length = howLongIsColorChain(column, index, backwards, fieldCounter);
                     int longestClue = cluesUsed.getLongestClue(index, backwards, currentField.getColor());
                     ClueField lc = cluesUsed.getClue(index, longestClue);
-                    if (length == lc.getHowMany()) {
-                        setCompletedClue(column, index, fieldCounter, clueCounter);
+                    if (lc != null && length == lc.getHowMany()) {
+                        setCompletedClue(column, index, fieldCounter, longestClue);
                         fieldCounter = backwards ? currentClue.getLowerEnd() - 1 : currentClue.getHigherEnd() + 1;
                         currentClue = cluesUsed.getClue(index, longestClue);
                         changed = true;
+                    } else {
+                        fieldCounter += increment * length;
                     }
                 } else {
                     fieldCounter += increment;
@@ -496,6 +503,10 @@ public class Grid {
             } else if (nextClue.getColor() == color) {
                 setFieldCross(column, index, higherEnd);
             }
+        } else {
+            //It is the last clue
+            int max = column? grid.length : grid[0].length;
+            crossBetween(column, index, higherEnd, max);
         }
         if (previousClue != null) {
             if (previousClue.isDone()) {
@@ -503,6 +514,9 @@ public class Grid {
             } else if (previousClue.getColor() == color) {
                 setFieldCross(column, index, lowerEnd);
             }
+        } else {
+            //It is the last clue
+            crossBetween(column, index, lowerEnd, -1);
         }
         lowerEnd++;
         higherEnd--;
@@ -564,6 +578,7 @@ public class Grid {
         GridField currentField = getField(column, index, start);
         int counter = clue.getHowMany();
 
+
         while (backwards ? fieldCounter >= max : fieldCounter <= max) {
             if (currentField.isCross()) {
                 counter = clue.getHowMany();
@@ -575,11 +590,11 @@ public class Grid {
             }
 
             if (counter == 0) {
-                return fieldCounter + increment * clue.getHowMany();
+                return fieldCounter - increment * (clue.getHowMany() - 1);
             }
 
             fieldCounter += increment;
-            currentField = getField(column, index, start);
+            currentField = getField(column, index, fieldCounter);
         }
         return -1;
     }

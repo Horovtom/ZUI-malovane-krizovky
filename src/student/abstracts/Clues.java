@@ -110,6 +110,8 @@ public abstract class Clues {
                     if (cf.getHowMany() > maxVal) {
                         max = i;
                         maxVal = cf.getHowMany();
+                    } else if (cf.getHowMany() == maxVal) {
+                        max = -1;
                     }
                 }
             }
@@ -120,11 +122,13 @@ public abstract class Clues {
                     if (cf.getHowMany() > maxVal) {
                         max = i;
                         maxVal = cf.getHowMany();
+                    } else if (cf.getHowMany() == maxVal) {
+                        max = -1;
                     }
                 }
             }
         }
 
-        return max;
+        return get.size() - max - 1;
     }
 }

@@ -1,6 +1,5 @@
 package tests;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import student.ClueField;
@@ -181,6 +180,57 @@ public class GridTest {
         assertEquals("_B_B", grid.getRowInString(2));
         assertEquals("____", grid.getRowInString(3));
         assertEquals("_YYY", grid.getRowInString(4));
+    }
+
+    @Test
+    public void crossCompletedSimple() throws Exception {
+        LeftClues lc = new LeftClues();
+        UpperClues uc = new UpperClues();
+        lc.addLineOfClues("B,2");
+        lc.addLineOfClues("B,3");
+        lc.addLineOfClues("B,1,B,1");
+        uc.addLineOfClues("B,3");
+        uc.addLineOfClues("B,2");
+        uc.addLineOfClues("B,2");
+        Grid grid = new Grid(lc, uc);
+        grid.setCell(0, 0, 'B');
+        grid.setCell(1, 0, 'B');
+        grid.setCell(0, 1, 'B');
+        grid.setCell(1, 1, 'B');
+        grid.setCell(2, 1, 'B');
+        grid.setCell(0, 2, 'B');
+        grid.setCell(2, 2, 'B');
+        assertTrue(grid.crossCompleted());
+        assertTrue(grid.isCross(1, 2));
+        assertTrue(grid.isCross(2, 0));
+        assertFalse(grid.crossCompleted());
+
+    }
+
+    @Test
+    public void crossCompletedIntermediate() throws Exception {
+        LeftClues lc = new LeftClues();
+        UpperClues uc = new UpperClues();
+        for (int i = 0; i < 9; i++) {
+            uc.addLineOfClues("B,1");
+        }
+
+        lc.addLineOfClues("B,1,B,1,B,1");
+        lc.addLineOfClues("B,1,B,2,B,3");
+        Grid grid = new Grid(lc, uc);
+        grid.setCell(0, 1, 'B');
+        grid.setCell(1, 0, 'B');
+        grid.setCell(4, 0, 'B');
+        grid.setCell(5, 1, 'B');
+        grid.setCell(6, 1, 'B');
+        grid.setCell(7, 1, 'B');
+        grid.setCell(8, 0, 'B');
+        assertTrue(grid.crossCompleted());
+        assertTrue(grid.isCross(8, 1));
+        assertTrue(grid.isCross(4, 1));
+        assertFalse(grid.isCross(2, 1));
+        assertTrue(grid.isCross(1,1));
+
     }
 
 }
