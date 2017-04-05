@@ -93,4 +93,24 @@ public abstract class Clues {
         }
         return clues.get(column).size();
     }
+
+    /**
+     * Returns the first not done clue with specified color
+     */
+    public int getLongestClue(int index, char color) {
+        int max = -1;
+        int maxVal = -1;
+        ArrayList<ClueField> get = clues.get(index);
+        for (int i = 0; i < get.size(); i++) {
+            ClueField cf = get.get(i);
+            if (!cf.isDone() && cf.getColor() == color) {
+                if (cf.getHowMany() > maxVal) {
+                    max = i;
+                    maxVal = cf.getHowMany();
+                }
+            }
+        }
+
+        return max;
+    }
 }

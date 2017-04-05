@@ -275,6 +275,61 @@ public class Grid {
         return changed;
     }
 
+    private boolean crossCompleted(boolean column, int index, boolean backwards, int clueCounter, int fieldCounter) {
+        boolean changed = false;
+        int max = backwards? 0 : column? grid.length - 1 : grid[0].length - 1;
+        int increment = backwards ? -1 : 1;
+        GridField currentField;
+        Clues cluesUsed = column ? upperClues : leftClues;
+        int oldFieldCounter = 0;
+        ClueField currentClue = cluesUsed.getClue(index, clueCounter);
+        boolean stuffed = true;
+
+        while (currentClue.isDone()) {
+            oldFieldCounter = fieldCounter;
+            fieldCounter = backwards ? currentClue.getLowerEnd() - 1 : currentClue.getHigherEnd() + 1;
+            clueCounter += increment;
+            currentClue = cluesUsed.getClue(index, clueCounter);
+            if (currentClue == null) {
+                return changed;
+            }
+        }
+
+        fieldCounter = findNextSpace(column, index, backwards, fieldCounter, currentClue);
+        if (fieldCounter == -1) {
+            LOGGER.severe("Unsolvable, not enough space for next clue...");
+            return true;
+        }
+        crossBetween(column, index, oldFieldCounter, fieldCounter);
+        while (currentClue != null) {
+
+        }
+        currentField = getField(column, index, fieldCounter);
+
+
+        if (currentField.getColor() == currentClue.getColor()) {
+            if (stuffed) {
+                //Cannot be on second field... so it is it!
+                for (int i = 0; i < currentClue.getHowMany(); i++) {
+                    currentField = getField(column, index, fieldCounter + i);
+                    currentField.setColor(currentClue.getColor());
+                    currentField.setLocked(true);
+                }
+                setCompletedClue(column, index, fieldCounter, clueCounter);
+            } else if (!currentField.isLocked()) {
+                int length = howLongIsColorChain(column, index, backwards, fieldCounter);
+                int longestClue = cluesUsed.getLongestClue(index, currentField.getColor());
+                ClueField lc = cluesUsed.getClue(index, longestClue);
+                if (length == lc.getHowMany()) {
+                    //It is the longest one!
+                    setCompletedClue(column, index, fieldCounter, clueCounter);
+                    fieldCounter = backwards? currentClue.getLowerEnd() - 1 : currentClue.getHigherEnd() + 1;
+                    currentClue = cluesUsed.getClue(index, longestClue);
+                }
+            }
+        }
+    }
+
     private boolean crossCompleted(boolean column, int index, boolean backwards) {
         boolean changed = false;
         int fieldCounter = backwards ? column ? grid.length - 1 : grid[0].length - 1 : 0;
