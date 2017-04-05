@@ -11,13 +11,14 @@ import java.util.logging.Logger;
 public abstract class Clues {
     protected static final Logger LOGGER = Logger.getLogger(Clues.class.getName());
     protected ArrayList<ArrayList<ClueField>> clues = new ArrayList<>();
+    protected ArrayList<Boolean> completed = new ArrayList<>();
 
     public Clues() {}
 
     public void addLineOfClues(String input) {
         StringTokenizer st = new StringTokenizer(input, ",");
 
-        clues.add(new ArrayList<>());
+        addColumn();
 
         boolean loadingColor = true;
         char color = 0;
@@ -32,14 +33,34 @@ public abstract class Clues {
         }
     }
 
+    public void setComplete(int column) {
+        if (column <0 || column >= completed.size()) {
+            LOGGER.warning("Trying to access non-existent column");
+            return;
+        }
+        completed.set(column, true);
+    }
+
+    public boolean isComplete(int column) {
+        if (column < 0 || column >= completed.size()) {
+            LOGGER.warning("Accessing non-existent clue column");
+            return false;
+        }
+        return completed.get(column);
+    }
+
+    private void addColumn() {
+        clues.add(new ArrayList<>());
+        completed.add(false);
+    }
 
     public void addClueBack(int column, ClueField clue) {
-        if (clues.size() <= column) clues.add(new ArrayList<>());
+        if (clues.size() <= column) addColumn();
         clues.get(column).add(clue);
     }
 
     public void addClueFront(int column, ClueField clue){
-        if (clues.size() <= column) clues.add(new ArrayList<>());
+        if (clues.size() <= column) addColumn();
         clues.get(column).add(0, clue);
     }
 

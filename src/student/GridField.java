@@ -22,10 +22,14 @@ public class GridField {
         return locked;
     }
 
-    public void setColor(char color) {
-        if (this.color == color) return;
+    /**
+     * @return if it set NEW color...
+     */
+    public boolean setColor(char color) {
+        if (this.color == color) return false;
         if (locked) LOGGER.warning("Trying to set locked cell... Doing so...");
         this.color = color;
+        return true;
     }
 
     public void setLocked(boolean locked) {
@@ -64,5 +68,10 @@ public class GridField {
         int result = (int) color;
         result = 31 * result + (locked ? 1 : 0);
         return result;
+    }
+
+    public void crossOut() {
+        color = '_';
+        locked = true;
     }
 }

@@ -96,4 +96,91 @@ public class GridTest {
         assertEquals("_CC_", testGrid1.getRowInString(2));
         assertEquals("_BC_", testGrid1.getRowInString(3));
     }
+
+    @Test
+    public void fillObviousSimple() throws Exception {
+        LeftClues lc = new LeftClues();
+        UpperClues uc = new UpperClues();
+        lc.addLineOfClues("B,2");
+        lc.addLineOfClues("B,2");
+        lc.addLineOfClues("B,1");
+        uc.addLineOfClues("B,3");
+        uc.addLineOfClues("B,2");
+        Grid grid = new Grid(lc, uc);
+        grid.setCell(0, 0, 'B');
+        grid.fillObvious();
+        assertEquals("BB",grid.getRowInString(0));
+        assertEquals("BB",grid.getRowInString(1));
+        assertEquals("B_",grid.getRowInString(2));
+    }
+
+    @Test
+    public void fillObviousSimpler() throws Exception {
+        LeftClues lc = new LeftClues();
+        UpperClues uc = new UpperClues();
+        lc.addLineOfClues("B,2");
+        lc.addLineOfClues("B,3");
+        lc.addLineOfClues("B,2");
+        uc.addLineOfClues("B,2");
+        uc.addLineOfClues("B,3");
+        uc.addLineOfClues("B,2");
+        Grid grid = new Grid(lc, uc);
+
+        grid.fillObvious();
+        assertEquals("___", grid.getRowInString(0));
+        assertEquals("___", grid.getRowInString(1));
+        assertEquals("___", grid.getRowInString(2));
+    }
+
+    @Test
+    public void fillObviousBoolean() throws Exception {
+        LeftClues lc = new LeftClues();
+        UpperClues uc = new UpperClues();
+        lc.addLineOfClues("B,2");
+        lc.addLineOfClues("B,3");
+        lc.addLineOfClues("B,2");
+        uc.addLineOfClues("B,2");
+        uc.addLineOfClues("B,3");
+        uc.addLineOfClues("B,2");
+        Grid grid = new Grid(lc, uc);
+        grid.setCell(2, 0, 'B');
+        grid.setCell(0, 1, 'B');
+        grid.setCell(0, 2, 'B');
+        boolean didAnything = grid.fillObvious();
+        assertEquals("_BB", grid.getRowInString(0));
+        assertEquals("BBB", grid.getRowInString(1));
+        assertEquals("BB_", grid.getRowInString(2));
+        assertTrue(didAnything);
+        didAnything = grid.fillObvious();
+        assertFalse(didAnything);
+    }
+
+    @Test
+    public void fillObviousIntermediate() throws Exception {
+        LeftClues lc = new LeftClues();
+        UpperClues uc = new UpperClues();
+        lc.addLineOfClues("Y,2,B,1");
+        lc.addLineOfClues("B,1,B,1");
+        lc.addLineOfClues("B,1,B,1");
+        lc.addLineOfClues("B,1");
+        lc.addLineOfClues("Y,3");
+        uc.addLineOfClues("B,1");
+        uc.addLineOfClues("Y,1,B,2,Y,1");
+        uc.addLineOfClues("Y,1,Y,1");
+        uc.addLineOfClues("B,3,Y,1");
+        Grid grid = new Grid(lc, uc);
+        grid.setCell(1, 0, 'Y');
+        grid.setCell(3, 0, 'B');
+        grid.setCell(1, 1, 'B');
+        grid.setCell(2,4,'Y');
+        grid.setCross(0, 0);
+        grid.setCross(0,4);
+        assertTrue(grid.fillObvious());
+        assertEquals("_YYB", grid.getRowInString(0));
+        assertEquals("_B_B", grid.getRowInString(1));
+        assertEquals("_B_B", grid.getRowInString(2));
+        assertEquals("____", grid.getRowInString(3));
+        assertEquals("_YYY", grid.getRowInString(4));
+    }
+
 }
