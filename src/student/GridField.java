@@ -70,8 +70,14 @@ public class GridField {
         return result;
     }
 
-    public void crossOut() {
+    public boolean crossOut() {
+        if (isCross()) return false;
         color = '_';
         locked = true;
+        return true;
+    }
+
+    public boolean isSpace() {
+        return color == '_' && !locked;
     }
 }
