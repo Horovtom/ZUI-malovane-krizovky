@@ -1,4 +1,5 @@
 package student.abstracts;
+
 import student.ClueField;
 
 import java.util.ArrayList;
@@ -13,7 +14,8 @@ public abstract class Clues {
     protected ArrayList<ArrayList<ClueField>> clues = new ArrayList<>();
     protected ArrayList<Boolean> completed = new ArrayList<>();
 
-    public Clues() {}
+    public Clues() {
+    }
 
     public void addLineOfClues(String input) {
         StringTokenizer st = new StringTokenizer(input, ",");
@@ -22,7 +24,7 @@ public abstract class Clues {
 
         boolean loadingColor = true;
         char color = 0;
-        while(st.hasMoreTokens()) {
+        while (st.hasMoreTokens()) {
             if (loadingColor) {
                 color = st.nextToken().charAt(0);
                 loadingColor = false;
@@ -34,7 +36,7 @@ public abstract class Clues {
     }
 
     public void setComplete(int column) {
-        if (column <0 || column >= completed.size()) {
+        if (column < 0 || column >= completed.size()) {
             LOGGER.warning("Trying to access non-existent column");
             return;
         }
@@ -59,7 +61,7 @@ public abstract class Clues {
         clues.get(column).add(clue);
     }
 
-    public void addClueFront(int column, ClueField clue){
+    public void addClueFront(int column, ClueField clue) {
         if (clues.size() <= column) addColumn();
         clues.get(column).add(0, clue);
     }
@@ -97,16 +99,28 @@ public abstract class Clues {
     /**
      * Returns the first not done clue with specified color
      */
-    public int getLongestClue(int index, char color) {
+    public int getLongestClue(int index, boolean backwards, char color) {
         int max = -1;
         int maxVal = -1;
         ArrayList<ClueField> get = clues.get(index);
-        for (int i = 0; i < get.size(); i++) {
-            ClueField cf = get.get(i);
-            if (!cf.isDone() && cf.getColor() == color) {
-                if (cf.getHowMany() > maxVal) {
-                    max = i;
-                    maxVal = cf.getHowMany();
+        if (backwards) {
+            for (int i = 0; i < get.size(); i++) {
+                ClueField cf = get.get(i);
+                if (!cf.isDone() && cf.getColor() == color) {
+                    if (cf.getHowMany() > maxVal) {
+                        max = i;
+                        maxVal = cf.getHowMany();
+                    }
+                }
+            }
+        } else {
+            for (int i = get.size() - 1; i >= 0; i--) {
+                ClueField cf = get.get(i);
+                if (!cf.isDone() && cf.getColor() == color) {
+                    if (cf.getHowMany() > maxVal) {
+                        max = i;
+                        maxVal = cf.getHowMany();
+                    }
                 }
             }
         }
