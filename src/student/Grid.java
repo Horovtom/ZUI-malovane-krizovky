@@ -13,6 +13,7 @@ public class Grid {
     private LeftClues leftClues;
     private UpperClues upperClues;
     private GridField[][] grid;
+    private boolean completed = false;
     private int width, height;
 
     public Grid(LeftClues leftClues, UpperClues upperClues) {
@@ -537,7 +538,6 @@ public class Grid {
     public boolean solve() {
         boolean changed;
         do {
-            changed = false;
             changed = generateBounds();
             if (completed()) return true;
             changed = fillObvious() || changed;
@@ -549,8 +549,9 @@ public class Grid {
         return false;
     }
 
-    //TODO:IMPLEMENT
     private boolean completed() {
-        return false;
+        if (completed) return true;
+        completed = leftClues.isComplete() && upperClues.isComplete();
+        return completed;
     }
 }

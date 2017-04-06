@@ -13,6 +13,7 @@ public abstract class Clues {
     protected static final Logger LOGGER = Logger.getLogger(Clues.class.getName());
     protected ArrayList<ArrayList<ClueField>> clues = new ArrayList<>();
     protected ArrayList<Boolean> completed = new ArrayList<>();
+    protected boolean complete = false;
 
     public Clues() {
     }
@@ -130,5 +131,27 @@ public abstract class Clues {
         }
 
         return get.size() - max - 1;
+    }
+
+    public boolean isComplete() {
+        if (complete) return true;
+
+        complete = true;
+        for (int i = 0; i < getClueLength(); i++) {
+            if (!completed.get(i)) {
+                boolean done = true;
+                for (int j = 0; j < getClueLength(i); j++) {
+                    done = clues.get(i).get(j).isDone();
+                    if (!done) break;
+                }
+                if (done) {
+                    completed.set(i, true);
+                } else {
+                    complete = false;
+                    return false;
+                }
+            }
+        }
+        return complete;
     }
 }
