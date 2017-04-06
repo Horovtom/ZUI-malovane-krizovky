@@ -230,7 +230,5 @@ public class GridTest {
         assertTrue(grid.isCross(4, 1));
         assertFalse(grid.isCross(2, 1));
         assertTrue(grid.isCross(1,1));
-
     }
-
 }
