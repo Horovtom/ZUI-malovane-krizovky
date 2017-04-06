@@ -233,7 +233,7 @@ public class GridTest {
     }
 
     @Test
-    public void simple10x10Home() throws Exception {
+    public void home10x10() throws Exception {
         LeftClues lc = new LeftClues();
         UpperClues uc = new UpperClues();
         uc.addLineOfClues("B,6");
@@ -258,7 +258,20 @@ public class GridTest {
         lc.addLineOfClues("B,10");
         lc.addLineOfClues("B,10");
 
+
         Grid grid = new Grid(lc, uc);
+        grid.loadSolution(
+                "____BB____" +
+                        "___BBBB___" +
+                        "__BBBBBB__" +
+                        "_BBBBBBBB_" +
+                        "BBBBBBBBBB" +
+                        "BBBB__BBBB" +
+                        "BBBB__BBBB" +
+                        "BBBBBBBBBB" +
+                        "BBBBBBBBBB" +
+                        "BBBBBBBBBB");
+
         grid.solve();
 
         assertEquals("____BB____", grid.getRowInString(0));
@@ -271,6 +284,52 @@ public class GridTest {
         assertEquals("BBBBBBBBBB", grid.getRowInString(7));
         assertEquals("BBBBBBBBBB", grid.getRowInString(8));
         assertEquals("BBBBBBBBBB", grid.getRowInString(9));
+
+    }
+
+    @Test
+    public void leaf10x10() throws Exception {
+        LeftClues lc = new LeftClues();
+        UpperClues uc = new UpperClues();
+        uc.addLineOfClues("B,1");
+        uc.addLineOfClues("B,4,B,2");
+        uc.addLineOfClues("B,1,B,2");
+        uc.addLineOfClues("B,6,B,1");
+        uc.addLineOfClues("B,1,B,2,B,1");
+        uc.addLineOfClues("B,5,B,1,B,1");
+        uc.addLineOfClues("B,1,B,2,B,1,B,1");
+        uc.addLineOfClues("B,3,B,1,B,2");
+        uc.addLineOfClues("B,1,B,5");
+        uc.addLineOfClues("B,2");
+
+        lc.addLineOfClues("B,6");
+        lc.addLineOfClues("B,1,B,1,B,1,B,1");
+        lc.addLineOfClues("B,2,B,1,B,2");
+        lc.addLineOfClues("B,1,B,1,B,2,B,1");
+        lc.addLineOfClues("B,1,B,1,B,4");
+        lc.addLineOfClues("B,1,B,2,B,1");
+        lc.addLineOfClues("B,8");
+        lc.addLineOfClues("B,1,B,1");
+        lc.addLineOfClues("B,1,B,4");
+        lc.addLineOfClues("B,2");
+
+        Grid grid = new Grid(lc, uc);
+        grid.loadSolution("____BBBBBB___B_B_B_B__BB_B_BB__B_B_BB_B__B_B_BBBB__B_BB___B__BBBBBBBB___B____B___B_BBBB___BB________");
+
+        assertTrue(grid.solve());
+
+        assertEquals("____BBBBBB", grid.getRowInString(0));
+        assertEquals("___B_B_B_B", grid.getRowInString(1));
+        assertEquals("__BB_B_BB_", grid.getRowInString(2));
+        assertEquals("_B_B_BB_B_", grid.getRowInString(3));
+        assertEquals("_B_B_BBBB_", grid.getRowInString(4));
+        assertEquals("_B_BB___B_", grid.getRowInString(5));
+        assertEquals("_BBBBBBBB_", grid.getRowInString(6));
+        assertEquals("__B____B__", grid.getRowInString(7));
+        assertEquals("_B_BBBB___", grid.getRowInString(8));
+        assertEquals("BB________", grid.getRowInString(9));
+
+
 
     }
 }

@@ -15,6 +15,7 @@ public class Grid {
     private GridField[][] grid;
     private boolean completed = false;
     private int width, height;
+    private String solution = null;
 
     public Grid(LeftClues leftClues, UpperClues upperClues) {
         this.leftClues = leftClues;
@@ -48,70 +49,116 @@ public class Grid {
         return changed;
     }
 
-    /**
-     * Used only with {@link #fillObvious()}
-     */
-    private boolean fillObvious(boolean column, int index, boolean backwards) {
-        int cellCounter = backwards ? column ? height - 1 : width - 1 : 0;
-        Clues cluesUsed = column ? upperClues : leftClues;
-        int clueCounter = backwards ? cluesUsed.getClueLength(index) - 1 : 0;
-        boolean locked = false;
-        ClueField currentClue = cluesUsed.getClue(index, clueCounter);
-        int counter = currentClue.getHowMany();
-        GridField currCell;
-        int increment = backwards ? -1 : 1;
-        ArrayList<Integer> toColor = new ArrayList<>();
-        boolean changed = false;
-
-        //Skip all whitespaces
-        //decrement counter
-        //if there was a color, start coloring
-        //if counter == 0, go to next clue
-
-        cellCounter = findNextFreeSpace(column, index, backwards, cellCounter);
-        currCell = getField(column, index, cellCounter);
-        while (currentClue != null) {
-            while (currCell.isCross()) {
-                cellCounter += increment;
-                currCell = getField(column, index, cellCounter);
-            }
+//    /**
+//     * Used only with {@link #fillObvious()}
+//     */
+//    private boolean fillObvious(boolean column, int index, boolean backwards) {
+//        int cellCounter = backwards ? column ? height - 1 : width - 1 : 0;
+//        Clues cluesUsed = column ? upperClues : leftClues;
+//        int clueCounter = backwards ? cluesUsed.getClueLength(index) - 1 : 0;
+//        boolean locked = false;
+//        ClueField currentClue = cluesUsed.getClue(index, clueCounter);
+//        int counter = currentClue.getHowMany();
+//        GridField currCell;
+//        int increment = backwards ? -1 : 1;
+//        ArrayList<Integer> toColor = new ArrayList<>();
+//        boolean changed = false;
+//
+//        //Skip all whitespaces
+//        //decrement counter
+//        //if there was a color, start coloring
+//        //if counter == 0, go to next clue
+//
+//        cellCounter = findNextFreeSpace(column, index, backwards, cellCounter);
+//        currCell = getField(column, index, cellCounter);
+//        while (currentClue != null) {
+//            while (currCell.isCross()) {
+//                cellCounter += increment;
+//                currCell = getField(column, index, cellCounter);
+//            }
+////            locked = false;
+//            while (counter > 0 && currentClue != null && currCell != null) {
+//                if (currCell.getColor() == '_' && !currCell.isLocked()) {
+//                    if (locked) {
+//                        toColor.add(cellCounter);
+//                    }
+//                    counter--;
+//                    cellCounter += increment;
+//                    currCell = getField(column, index, cellCounter);
+//                } else if (currCell.getColor() == currentClue.getColor()) {
+//                    locked = true;
+//                    counter--;
+//                    cellCounter += increment;
+//                    currCell = getField(column, index, cellCounter);
+//                } else if (currCell.isCross()) {
+//                    locked = false;
+//                    toColor.clear();
+//                    while (currCell.isCross()) {
+//                        cellCounter += increment;
+//                        currCell = getField(column, index, cellCounter);
+//                    }
+//                    counter = currentClue.getHowMany();
+//                } else {
+//                    //This cell is from the previous clue... skip
+//                    cellCounter += increment;
+//                    currCell = getField(column, index, cellCounter);
+//                }
+//            }
+//            if (counter == 0) {
+//                changed = colorBetween(column, index, toColor, currentClue.getColor()) || changed;
+//                toColor.clear();
+//            }
 //            locked = false;
-            while (counter > 0 && currentClue != null && currCell != null) {
-                if (currCell.getColor() == '_' && !currCell.isLocked()) {
-                    if (locked) {
-                        toColor.add(cellCounter);
-                    }
-                    counter--;
-                    cellCounter += increment;
-                    currCell = getField(column, index, cellCounter);
-                } else if (currCell.getColor() == currentClue.getColor()) {
-                    locked = true;
-                    counter--;
-                    cellCounter += increment;
-                    currCell = getField(column, index, cellCounter);
-                } else if (currCell.isCross()) {
-                    locked = false;
-                    toColor.clear();
-                    while (currCell.isCross()) {
-                        cellCounter += increment;
-                        currCell = getField(column, index, cellCounter);
-                    }
+//            clueCounter += increment;
+//            currentClue = cluesUsed.getClue(index, clueCounter);
+//            if (currentClue == null) return changed;
+//            counter = currentClue.getHowMany();
+//        }
+//        return changed;
+//    }
+
+    private boolean fillObvious(boolean column, int index, boolean backwards) {
+        int increment = backwards ? -1 : 1;
+        int bound = backwards ? 0 : column ? grid.length - 1 : grid[0].length - 1;
+        int fieldCounter = backwards ? bound : 0;
+        Clues cluesUsed = column ? upperClues : leftClues;
+        int cluesCounter = backwards ? cluesUsed.getClueLength(index) - 1 : 0;
+        boolean changed = false;
+        ClueField currentClue = cluesUsed.getClue(index, cluesCounter);
+        GridField currentField = getField(column, index, fieldCounter);
+        int counter = currentClue.getHowMany();
+        boolean inColor = false;
+        int firstColor = -1;
+
+        while (currentField != null) {
+            if (currentField.isCross()) {
+                counter = currentClue.getHowMany();
+                firstColor = -1;
+                inColor = false;
+
+            } else if (currentField.getColor() == currentClue.getColor()) {
+                inColor = true;
+                if (firstColor == -1) firstColor = fieldCounter;
+                counter--;
+
+            } else if (!inColor && currentField.isSpace()) {
+                return changed;
+            }
+
+            if (counter == 0) {
+                if (inColor) {
+                    colorBetween(column, index, firstColor, fieldCounter, currentClue.getColor());
+                    char lastColor = currentClue.getColor();
+                    currentClue = cluesUsed.getClue(index, ++cluesCounter);
+                    changed = true;
+                    if (currentClue == null) return true;
+                    if (currentClue.getColor() == lastColor) fieldCounter++;
+                    inColor = false;
+                    firstColor = -1;
                     counter = currentClue.getHowMany();
-                } else {
-                    //This cell is from the previous clue... skip
-                    cellCounter += increment;
-                    currCell = getField(column, index, cellCounter);
                 }
             }
-            if (counter == 0) {
-                changed = colorBetween(column, index, toColor, currentClue.getColor()) || changed;
-                toColor.clear();
-            }
-            locked = false;
-            clueCounter += increment;
-            currentClue = cluesUsed.getClue(index, clueCounter);
-            if (currentClue == null) return changed;
-            counter = currentClue.getHowMany();
+            currentField = getField(column, index, ++fieldCounter);
         }
         return changed;
     }
@@ -282,10 +329,10 @@ public class Grid {
                     }
                     setCompletedClue(column, index, fieldCounter, clueCounter);
                     changed = true;
+                    fieldCounter += currentClue.getHowMany() * increment;
                     clueCounter += increment;
                     currentClue = cluesUsed.getClue(index, clueCounter);
                     if (currentClue == null) break;
-                    fieldCounter += currentClue.getHowMany() * increment;
                     fieldCounter = findNextSpaceForClue(column, index, backwards, fieldCounter, currentClue);
                 } else if (currentField.getColor() == '_') stuffed = false;
                 else {
@@ -524,7 +571,8 @@ public class Grid {
         for (int i = 0; i < height; i++) {
             sb.append('\n');
             for (int j = 0; j < width; j++) {
-                sb.append(grid[i][j].getColor());
+                if (grid[i][j].isCross()) sb.append('+');
+                else sb.append(grid[i][j].getColor());
             }
         }
         sb.append('}');
@@ -539,19 +587,150 @@ public class Grid {
         boolean changed;
         do {
             changed = generateBounds();
+            printDifference();
             if (completed()) return true;
             changed = fillObvious() || changed;
+            //printDifference();
             changed = crossCompleted() || changed;
-
+            crossFullLines();
+            printDifference();
+            System.out.println(this);
             if (completed()) return true;
         } while (changed);
 
         return false;
     }
 
+    private void crossFullLines() {
+        for (int y = 0; y < grid.length; y++) {
+            if (leftClues.isComplete(y)) continue;
+
+            ArrayList<Integer> lowers = new ArrayList<>();
+            ArrayList<Integer> highers = new ArrayList<>();
+            boolean full = true;
+            char lastColor = 0;
+            boolean inColor = false;
+            for (int x = 0; x < grid[0].length; x++) {
+                if (!grid[y][x].isLocked()) {
+                    full = false;
+                    break;
+                } else if (inColor) {
+                    if (grid[y][x].isCross()) {
+                        highers.add(x - 1);
+                        inColor = false;
+                        lastColor = '_';
+                    } else if (grid[y][x].getColor() != lastColor) {
+                        highers.add(x - 1);
+                        lowers.add(x);
+                        lastColor = grid[y][x].getColor();
+                    }
+                } else if (!grid[y][x].isCross()) {
+                    inColor = true;
+                    lowers.add(x);
+                    lastColor = grid[y][x].getColor();
+                }
+            }
+
+            if (full) {
+                if (highers.size() < lowers.size()) {
+                    highers.add(grid[0].length - 1);
+                }
+                leftClues.setCluesDone(y, lowers, highers);
+            }
+        }
+
+        for (int x = 0; x < grid[0].length; x++) {
+            if (upperClues.isComplete(x)) continue;
+
+            ArrayList<Integer> lowers = new ArrayList<>();
+            ArrayList<Integer> highers = new ArrayList<>();
+            boolean full = true;
+            char lastColor = 0;
+            boolean inColor = false;
+            for (int y = 0; y < grid.length; y++) {
+                if (!grid[x][y].isLocked()) {
+                    full = false;
+                    break;
+                } else if (inColor) {
+                    if (grid[x][y].isCross()) {
+                        highers.add(y - 1);
+                        inColor = false;
+                        lastColor = '_';
+                    } else if (grid[x][y].getColor() != lastColor) {
+                        highers.add(y - 1);
+                        lowers.add(y);
+                        lastColor = grid[x][y].getColor();
+                    }
+                } else if (!grid[x][y].isCross()) {
+                    inColor = true;
+                    lowers.add(y);
+                    lastColor = grid[x][y].getColor();
+                }
+            }
+
+            if (full) {
+                if (highers.size() < lowers.size()) {
+                    highers.add(grid.length - 1);
+                }
+                upperClues.setCluesDone(x, lowers, highers);
+            }
+        }
+
+
+    }
+
     private boolean completed() {
         if (completed) return true;
         completed = leftClues.isComplete() && upperClues.isComplete();
         return completed;
+    }
+
+    public boolean checkSolution() {
+        if (solution == null) return true;
+
+        int stringCounter = 0;
+        for (int y = 0; y < grid.length; y++) {
+            String line = getRowInString(y);
+            for (int x = 0; x < line.length(); x++) {
+                if (line.charAt(x) != solution.charAt(stringCounter++)) {
+                    if (!grid[y][x].isSpace()) {
+                        LOGGER.severe("Invalid solution! Expected: " + solution.charAt(stringCounter - 1) + ", got: " +
+                                line.charAt(x) + ", at x=" + x + ", y=" + y);
+                        return false;
+                    }
+                }
+            }
+        }
+        return true;
+    }
+
+    private void printDifference() {
+        if (solution == null) return;
+        if (!checkSolution()) return;
+
+        int counter = 0;
+        int stringCounter = 0;
+        for (int y = 0; y < grid.length; y++) {
+            String line = getRowInString(y);
+            int currCounter = 0;
+            StringBuilder sb = new StringBuilder();
+            for (int x = 0; x < line.length(); x++) {
+                if (line.charAt(x) != solution.charAt(stringCounter++)) {
+                    sb.append('X');
+                    counter++;
+                    currCounter++;
+                } else {
+                    sb.append(line.charAt(x));
+                }
+            }
+            sb.append("    ").append(currCounter);
+            System.out.println(sb.toString());
+        }
+        System.out.println("DIFFERENCE: " + counter);
+        System.out.println("\n-----------\n");
+    }
+
+    public void loadSolution(String string) {
+        solution = string;
     }
 }

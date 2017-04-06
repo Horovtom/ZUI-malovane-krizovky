@@ -154,4 +154,13 @@ public abstract class Clues {
         }
         return complete;
     }
+
+    public void setCluesDone(int index, ArrayList<Integer> lowers, ArrayList<Integer> highers) {
+        if (completed.get(index)) return;
+        for (int i = 0; i < getClueLength(index); i++) {
+            if (clues.get(index).get(i).isDone()) continue;
+            clues.get(index).get(i).setDone(lowers.get(i), highers.get(i));
+        }
+        isComplete(index);
+    }
 }
