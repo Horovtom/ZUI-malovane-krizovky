@@ -231,4 +231,46 @@ public class GridTest {
         assertFalse(grid.isCross(2, 1));
         assertTrue(grid.isCross(1,1));
     }
+
+    @Test
+    public void simple10x10Home() throws Exception {
+        LeftClues lc = new LeftClues();
+        UpperClues uc = new UpperClues();
+        uc.addLineOfClues("B,6");
+        uc.addLineOfClues("B,7");
+        uc.addLineOfClues("B,8");
+        uc.addLineOfClues("B,9");
+        uc.addLineOfClues("B,5,B,3");
+        uc.addLineOfClues("B,5,B,3");
+        uc.addLineOfClues("B,9");
+        uc.addLineOfClues("B,8");
+        uc.addLineOfClues("B,7");
+        uc.addLineOfClues("B,6");
+
+        lc.addLineOfClues("B,2");
+        lc.addLineOfClues("B,4");
+        lc.addLineOfClues("B,6");
+        lc.addLineOfClues("B,8");
+        lc.addLineOfClues("B,10");
+        lc.addLineOfClues("B,4,B,4");
+        lc.addLineOfClues("B,4,B,4");
+        lc.addLineOfClues("B,10");
+        lc.addLineOfClues("B,10");
+        lc.addLineOfClues("B,10");
+
+        Grid grid = new Grid(lc, uc);
+        grid.solve();
+
+        assertEquals("____BB____", grid.getRowInString(0));
+        assertEquals("___BBBB___", grid.getRowInString(1));
+        assertEquals("__BBBBBB__", grid.getRowInString(2));
+        assertEquals("_BBBBBBBB_", grid.getRowInString(3));
+        assertEquals("BBBBBBBBBB", grid.getRowInString(4));
+        assertEquals("BBBB__BBBB", grid.getRowInString(5));
+        assertEquals("BBBB__BBBB", grid.getRowInString(6));
+        assertEquals("BBBBBBBBBB", grid.getRowInString(7));
+        assertEquals("BBBBBBBBBB", grid.getRowInString(8));
+        assertEquals("BBBBBBBBBB", grid.getRowInString(9));
+
+    }
 }

@@ -151,11 +151,22 @@ public class Grid {
      */
     public boolean generateBounds() {
         boolean changed = false;
+        boolean currentChanged;
         for (int i = 0; i < height; i++) {
-            changed = generateBounds(false, i) || changed;
+            currentChanged = generateBounds(false, i);
+            if (currentChanged) {
+                crossCompleted(false, i, false);
+                crossCompleted(false, i, true);
+            }
+            changed = currentChanged || changed;
         }
         for (int i = 0; i < width; i++) {
-            changed = generateBounds(true, i) || changed;
+            currentChanged = generateBounds(true, i);
+            if (currentChanged) {
+                crossCompleted(true, i, false);
+                crossCompleted(true, i, true);
+            }
+            changed = currentChanged || changed;
         }
         return changed;
     }
@@ -266,7 +277,7 @@ public class Grid {
             if (stuffed) {
                 if (currentField.getColor() == currentClue.getColor()) {
                     for (int i = 0; i < currentClue.getHowMany(); i++) {
-                        getField(column, index, fieldCounter + i).setColor(currentClue.getColor());
+                        getField(column, index, fieldCounter + i * increment).setColor(currentClue.getColor());
                     }
                     setCompletedClue(column, index, fieldCounter, clueCounter);
                     changed = true;
@@ -359,9 +370,10 @@ public class Grid {
     }
 
     /**
-     * Crosses all between index1 and index2, including index1
+     * Crosses all between index1 and index2, including index1 if they are not the same
      */
     private boolean crossBetween(boolean column, int index, int index1, int index2) {
+        if (index1 == index2) return false;
         boolean changed = false;
         int increment = index1 > index2 ? -1 : 1;
         for (int i = index1; i != index2; i += increment) {
@@ -438,7 +450,7 @@ public class Grid {
         for (int i = 0; i < positions.length; i++) {
             ClueField currClue = cluesUsed.getClue(index, i);
             if (i == 0) {
-                positions[0] = generateNextPosition(column, 0, 0, currClue, false);
+                positions[0] = generateNextPosition(column, 0, index, currClue, false);
                 lastColor = currClue.getColor();
             } else {
                 positions[i] = generateNextPosition(
@@ -458,18 +470,18 @@ public class Grid {
         int i = start;
         int counter = 0;
 
-        int boundary = column ? height : width;
+        int boundary = backwards? 0 : column ? height : width;
         GridField field;
-        while (i < boundary && counter < clue.getHowMany()) {
-            field = column ? grid[i][index] : grid[index][i];
+        while ((backwards? (i >= boundary) : (i < boundary)) && counter < clue.getHowMany()) {
+            field = getField(column, index, i);
 
             if (!field.isCross()) counter++;
             if (backwards) i--;
             else i++;
         }
-        if (i > boundary) LOGGER.severe("Couldnt fit this clue into line: " + clue);
-        else if (i < boundary && i >= 0) {
-            field = column ? grid[i][index] : grid[index][i];
+
+        if (backwards? i >= 0 : i < boundary) {
+            field = getField(column, index, i);
             while (field.getColor() == clue.getColor()) {
                 if (backwards) i--;
                 else i++;
@@ -520,5 +532,25 @@ public class Grid {
 
     public void setCross(int x, int y) {
         grid[y][x].crossOut();
+    }
+
+    public boolean solve() {
+        boolean changed;
+        do {
+            changed = false;
+            changed = generateBounds();
+            if (completed()) return true;
+            changed = fillObvious() || changed;
+            changed = crossCompleted() || changed;
+
+            if (completed()) return true;
+        } while (changed);
+
+        return false;
+    }
+
+    //TODO:IMPLEMENT
+    private boolean completed() {
+        return false;
     }
 }
