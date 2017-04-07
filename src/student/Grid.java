@@ -32,6 +32,21 @@ public class Grid {
         }
         height = grid.length;
         width = grid[0].length;
+
+        findEmptyLines();
+    }
+
+    private void findEmptyLines() {
+        for (int i = 0; i < height; i++) {
+            if (leftClues.isComplete(i)) {
+                crossBetween(false, i, 0, width);
+            }
+        }
+        for (int i = 0; i < width; i++) {
+            if (upperClues.isComplete(i)) {
+                crossBetween(true, i, 0, height);
+            }
+        }
     }
 
     public boolean fillObvious() {
@@ -129,6 +144,32 @@ public class Grid {
         int counter = currentClue.getHowMany();
         boolean inColor = false;
         int firstColor = -1;
+        ClueField lastClue = null;
+        while (currentClue.isDone()) {
+            if (lastClue != null) {
+                int lowerBound = backwards ? currentClue.getHigherEnd() : lastClue.getHigherEnd();
+                int higherBound = backwards ? lastClue.getLowerEnd() : currentClue.getLowerEnd();
+                crossBetween(column, index, lowerBound + 1, higherBound);
+            } else {
+                changed = crossBetween(column, index, backwards ? column ? grid.length - 1 : grid[0].length - 1 : 0, backwards ? currentClue.getHigherEnd() : currentClue.getLowerEnd()) || changed;
+            }
+            fieldCounter = backwards ? currentClue.getLowerEnd() : currentClue.getHigherEnd();
+            char lastColor = currentClue.getColor();
+            lastClue = currentClue;
+            cluesCounter += increment;
+            currentClue = cluesUsed.getClue(index, cluesCounter);
+            if (currentClue == null) return changed;
+            if (lastColor == currentClue.getColor()) {
+                fieldCounter += increment;
+                currentField = getField(column, index, fieldCounter);
+                if (currentField == null) return changed;
+                if (!currentField.isCross()) {
+                    changed = true;
+                    currentField.crossOut();
+                    fieldCounter += increment;
+                }
+            }
+        }
 
         while (currentField != null) {
             if (currentField.isCross()) {
@@ -147,11 +188,12 @@ public class Grid {
 
             if (counter == 0) {
                 if (inColor) {
+                    changed = currentClue.isDone() || changed;
                     colorBetween(column, index, firstColor, fieldCounter, currentClue.getColor());
                     char lastColor = currentClue.getColor();
                     cluesCounter += increment;
                     currentClue = cluesUsed.getClue(index, cluesCounter);
-                    changed = true;
+
                     if (currentClue == null) return true;
                     if (currentClue.getColor() == lastColor) {
                         fieldCounter += increment;
@@ -164,6 +206,8 @@ public class Grid {
             fieldCounter += increment;
             currentField = getField(column, index, fieldCounter);
         }
+
+        //TODO: Missing function for this situation: [1 2] [__B_B___]
 
         return changed;
     }
@@ -213,6 +257,7 @@ public class Grid {
             }
             changed = currentChanged || changed;
         }
+        crossFullLines();
         for (int i = 0; i < width; i++) {
             currentChanged = generateBounds(true, i);
             if (currentChanged) {
@@ -653,23 +698,23 @@ public class Grid {
             char lastColor = 0;
             boolean inColor = false;
             for (int y = 0; y < grid.length; y++) {
-                if (!grid[x][y].isLocked()) {
+                if (!grid[y][x].isLocked()) {
                     full = false;
                     break;
                 } else if (inColor) {
-                    if (grid[x][y].isCross()) {
+                    if (grid[y][x].isCross()) {
                         highers.add(y - 1);
                         inColor = false;
                         lastColor = '_';
-                    } else if (grid[x][y].getColor() != lastColor) {
+                    } else if (grid[y][x].getColor() != lastColor) {
                         highers.add(y - 1);
                         lowers.add(y);
-                        lastColor = grid[x][y].getColor();
+                        lastColor = grid[y][x].getColor();
                     }
-                } else if (!grid[x][y].isCross()) {
+                } else if (!grid[y][x].isCross()) {
                     inColor = true;
                     lowers.add(y);
-                    lastColor = grid[x][y].getColor();
+                    lastColor = grid[y][x].getColor();
                 }
             }
 
