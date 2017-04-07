@@ -142,24 +142,29 @@ public class Grid {
                 counter--;
 
             } else if (!inColor && currentField.isSpace()) {
-                return changed;
+                break;
             }
 
             if (counter == 0) {
                 if (inColor) {
                     colorBetween(column, index, firstColor, fieldCounter, currentClue.getColor());
                     char lastColor = currentClue.getColor();
-                    currentClue = cluesUsed.getClue(index, ++cluesCounter);
+                    cluesCounter += increment;
+                    currentClue = cluesUsed.getClue(index, cluesCounter);
                     changed = true;
                     if (currentClue == null) return true;
-                    if (currentClue.getColor() == lastColor) fieldCounter++;
+                    if (currentClue.getColor() == lastColor) {
+                        fieldCounter += increment;
+                    }
                     inColor = false;
                     firstColor = -1;
                     counter = currentClue.getHowMany();
                 }
             }
-            currentField = getField(column, index, ++fieldCounter);
+            fieldCounter += increment;
+            currentField = getField(column, index, fieldCounter);
         }
+
         return changed;
     }
 
@@ -590,7 +595,7 @@ public class Grid {
             printDifference();
             if (completed()) return true;
             changed = fillObvious() || changed;
-            //printDifference();
+            printDifference();
             changed = crossCompleted() || changed;
             crossFullLines();
             printDifference();
