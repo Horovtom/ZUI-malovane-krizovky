@@ -2,6 +2,7 @@ package student;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.StringTokenizer;
 import java.util.logging.Logger;
@@ -11,9 +12,16 @@ import java.util.logging.Logger;
  */
 public class CSPMain {
     private static final Logger LOGGER = Logger.getLogger(CSPMain.class.getName());
+    private static Grid grid = null;
+    private static String solution = null;
 
     public static void main(String[] args) {
-        BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+        parseInput(System.in);
+        printResult();
+    }
+
+    public static void parseInput(InputStream is) {
+        BufferedReader reader = new BufferedReader(new InputStreamReader(is));
         int numOfRows, numOfCols;
         try {
             String currentLine = reader.readLine();
@@ -30,11 +38,46 @@ public class CSPMain {
                 uc.addLineOfClues(reader.readLine());
             }
 
-            Grid grid = new Grid(lc, uc);
+            grid = new Grid(lc, uc);
+            if (solution != null) {
+                grid.loadSolution(solution);
+                solution = null;
+            }
+            long myTime = System.currentTimeMillis();
+
             grid.solve();
+
+            System.out.println("Solved in: " + (System.currentTimeMillis() - myTime) + "ms.");
+            //System.out.println(grid);
+
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
 
+    public static void printResult() {
+        if (grid == null) {
+            LOGGER.severe("There is no grid instantiated!");
+            return;
+        }
+        System.out.println(grid);
+    }
+
+    public static String getResult() {
+        if (grid == null) return null;
+
+        return grid.toString();
+    }
+
+    public static void setSolution(BufferedReader solution) {
+        StringBuilder string = new StringBuilder();
+        try {
+            while (solution.ready()) {
+                string.append(solution.readLine());
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        CSPMain.solution = string.toString();
     }
 }

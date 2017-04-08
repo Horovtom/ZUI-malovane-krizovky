@@ -2,10 +2,9 @@ package tests;
 
 import org.junit.Before;
 import org.junit.Test;
-import student.ClueField;
-import student.Grid;
-import student.LeftClues;
-import student.UpperClues;
+import student.*;
+
+import java.io.*;
 
 import static org.junit.Assert.*;
 
@@ -248,7 +247,7 @@ public class GridTest {
         Grid grid = new Grid(lc, uc);
         grid.loadSolution("____BBBBBB___B_B_B_B__BB_B_BB__B_B_BB_B__B_B_BBBB__B_BB___B__BBBBBBBB___B____B___B_BBBB___BB________");
 
-        grid.solve();
+        assertFalse(grid.solve());
 
         //TODO: THIS SHOULD BE SOLVABLE AFTER SOLVING THE [1 2] __B_B__ problem
 
@@ -266,8 +265,23 @@ public class GridTest {
 
     @Test
     public void test_csp_example() throws Exception {
-        //TODO: IMPLEMENT
+        CSPMain.parseInput(new FileInputStream(new File("/home/lactosis/Documents/Programming/Java/JAG/ZUI-malovane-krizovky/src/student/examples/csp_example.txt")));
+        String result = CSPMain.getResult();
+        assertFalse(result == null);
+        StringReader reader = new StringReader(result);
+        BufferedReader bufferedReader = new BufferedReader(reader);
+        System.out.println("Got: \n" + result + "\nShould be:");
+        BufferedReader expected = new BufferedReader(new FileReader(new File("/home/lactosis/Documents/Programming/Java/JAG/ZUI-malovane-krizovky/src/student/examples/csp_example.txt.out.txt")));
+        String line;
+        while (bufferedReader.ready() && expected.ready()) {
+            line = expected.readLine();
+            System.out.println(line);
+            assertEquals(line, bufferedReader.readLine());
+        }
+        assertFalse(expected.ready());
+        assertTrue(bufferedReader.readLine() == null);
     }
+
 
     @Test
     public void test_input() throws Exception {
@@ -276,7 +290,22 @@ public class GridTest {
 
     @Test
     public void test_krtek() throws Exception {
-        //TODO: IMPLEMENT
+        CSPMain.setSolution(new BufferedReader(new FileReader(new File("/home/lactosis/Documents/Programming/Java/JAG/ZUI-malovane-krizovky/src/student/examples/krtek.txt.out.txt"))));
+        CSPMain.parseInput(new FileInputStream(new File("/home/lactosis/Documents/Programming/Java/JAG/ZUI-malovane-krizovky/src/student/examples/krtek.txt")));
+        String result = CSPMain.getResult();
+        assertFalse(result == null);
+        StringReader reader = new StringReader(result);
+        BufferedReader bufferedReader = new BufferedReader(reader);
+        System.out.println("Got: \n" + result + "\nShould be:");
+        BufferedReader expected = new BufferedReader(new FileReader(new File("/home/lactosis/Documents/Programming/Java/JAG/ZUI-malovane-krizovky/src/student/examples/krtek.txt.out.txt")));
+        String line;
+        while (bufferedReader.ready() && expected.ready()) {
+            line = expected.readLine();
+            System.out.println(line);
+            assertEquals(line, bufferedReader.readLine());
+        }
+        assertFalse(expected.ready());
+        assertTrue(bufferedReader.readLine() == null);
     }
 
     @Test
@@ -371,21 +400,25 @@ public class GridTest {
         lc.addLineOfClues("G,19");
         lc.addLineOfClues("G,19");
 
+
         uc.addLineOfClues("G,13");
         uc.addLineOfClues("G,13");
         uc.addLineOfClues("G,6,Y,1,G,6");
         uc.addLineOfClues("G,6,Y,1,G,6");
         uc.addLineOfClues("G,5,Y,3,G,5");
+
         uc.addLineOfClues("G,5,Y,3,G,5");
         uc.addLineOfClues("G,4,Y,5,G,4");
         uc.addLineOfClues("G,3,Y,2,B,3,Y,2,G,3");
         uc.addLineOfClues("G,3,Y,1,B,1,B,3,Y,1,G,3");
         uc.addLineOfClues("G,2,Y,2,B,5,Y,2,G,2");
-        uc.addLineOfClues("G,2,Y,1,B,2,B,2,Y,1,G,3");
-        uc.addLineOfClues("G,3,Y,2,B,3,Y,2,G,1");
+
+        uc.addLineOfClues("G,3,Y,1,B,2,B,2,Y,1,G,3");
+        uc.addLineOfClues("G,3,Y,2,B,3,Y,2,G,3");
         uc.addLineOfClues("G,4,Y,5,G,4");
         uc.addLineOfClues("G,5,Y,3,G,5");
         uc.addLineOfClues("G,5,Y,3,G,5");
+
         uc.addLineOfClues("G,6,Y,1,G,6");
         uc.addLineOfClues("G,6,Y,1,G,6");
         uc.addLineOfClues("G,13");

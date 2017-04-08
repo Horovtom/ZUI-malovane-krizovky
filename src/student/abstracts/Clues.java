@@ -2,21 +2,47 @@ package student.abstracts;
 
 import student.ClueField;
 
-import java.util.ArrayList;
-import java.util.Objects;
-import java.util.StringTokenizer;
+import java.util.*;
 import java.util.logging.Logger;
 
 /**
  * Created by Hermes235 on 30.3.2017.
  */
 public abstract class Clues {
-    protected static final Logger LOGGER = Logger.getLogger(Clues.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(Clues.class.getName());
     protected ArrayList<ArrayList<ClueField>> clues = new ArrayList<>();
-    protected ArrayList<Boolean> completed = new ArrayList<>();
-    protected boolean complete = false;
+    private ArrayList<Boolean> completed = new ArrayList<>();
+    private boolean complete = false;
+    private ArrayList<Collection<ClueField>> singleColors = new ArrayList<>();
 
     public Clues() {
+    }
+
+    public Collection<ClueField> getSingleColors(int index) {
+        return this.singleColors.get(index);
+    }
+
+    public void finalizeCreation() {
+        for (ArrayList<ClueField> clue : clues) {
+            ArrayList<Character> colors = new ArrayList<>();
+            HashMap<Character, ClueField> saved = new HashMap<>();
+            ArrayList<Character> removed = new ArrayList<>();
+            for (ClueField aClue : clue) {
+                if (!removed.contains(aClue.getColor())) {
+                    if (colors.contains(aClue.getColor())) {
+                        colors.remove((Character) aClue.getColor());
+                        saved.remove(aClue.getColor());
+                        removed.add(aClue.getColor());
+                    } else {
+                        colors.add(aClue.getColor());
+                        saved.put(aClue.getColor(), aClue);
+                    }
+                }
+            }
+
+            singleColors.add(saved.values());
+        }
+
     }
 
     public void addLineOfClues(String input) {
@@ -168,7 +194,7 @@ public abstract class Clues {
         if (completed.get(index)) return;
         for (int i = 0; i < getClueLength(index); i++) {
             if (clues.get(index).get(i).isDone()) continue;
-            clues.get(index).get(i).setDone(lowers.get(i), highers.get(i));
+            getClue(index, i).setDone(lowers.get(i), highers.get(i));
         }
         isComplete(index);
     }

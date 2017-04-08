@@ -3,6 +3,7 @@ package student;
 import student.abstracts.Clues;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.logging.Logger;
 
 /**
@@ -19,7 +20,9 @@ public class Grid {
 
     public Grid(LeftClues leftClues, UpperClues upperClues) {
         this.leftClues = leftClues;
+        leftClues.finalizeCreation();
         this.upperClues = upperClues;
+        upperClues.finalizeCreation();
         init();
     }
 
@@ -51,7 +54,7 @@ public class Grid {
 
     public boolean fillObvious() {
         boolean changed = false;
-        for (int i = 0; i < grid.length; i++) {
+        for (int i = 0; i < height; i++) {
             if (leftClues.isComplete(i)) continue;
             changed = fillObvious(false, i, false) || changed;
             changed = fillObvious(false, i, true) || changed;
@@ -64,77 +67,9 @@ public class Grid {
         return changed;
     }
 
-//    /**
-//     * Used only with {@link #fillObvious()}
-//     */
-//    private boolean fillObvious(boolean column, int index, boolean backwards) {
-//        int cellCounter = backwards ? column ? height - 1 : width - 1 : 0;
-//        Clues cluesUsed = column ? upperClues : leftClues;
-//        int clueCounter = backwards ? cluesUsed.getClueLength(index) - 1 : 0;
-//        boolean locked = false;
-//        ClueField currentClue = cluesUsed.getClue(index, clueCounter);
-//        int counter = currentClue.getHowMany();
-//        GridField currCell;
-//        int increment = backwards ? -1 : 1;
-//        ArrayList<Integer> toColor = new ArrayList<>();
-//        boolean changed = false;
-//
-//        //Skip all whitespaces
-//        //decrement counter
-//        //if there was a color, start coloring
-//        //if counter == 0, go to next clue
-//
-//        cellCounter = findNextFreeSpace(column, index, backwards, cellCounter);
-//        currCell = getField(column, index, cellCounter);
-//        while (currentClue != null) {
-//            while (currCell.isCross()) {
-//                cellCounter += increment;
-//                currCell = getField(column, index, cellCounter);
-//            }
-////            locked = false;
-//            while (counter > 0 && currentClue != null && currCell != null) {
-//                if (currCell.getColor() == '_' && !currCell.isLocked()) {
-//                    if (locked) {
-//                        toColor.add(cellCounter);
-//                    }
-//                    counter--;
-//                    cellCounter += increment;
-//                    currCell = getField(column, index, cellCounter);
-//                } else if (currCell.getColor() == currentClue.getColor()) {
-//                    locked = true;
-//                    counter--;
-//                    cellCounter += increment;
-//                    currCell = getField(column, index, cellCounter);
-//                } else if (currCell.isCross()) {
-//                    locked = false;
-//                    toColor.clear();
-//                    while (currCell.isCross()) {
-//                        cellCounter += increment;
-//                        currCell = getField(column, index, cellCounter);
-//                    }
-//                    counter = currentClue.getHowMany();
-//                } else {
-//                    //This cell is from the previous clue... skip
-//                    cellCounter += increment;
-//                    currCell = getField(column, index, cellCounter);
-//                }
-//            }
-//            if (counter == 0) {
-//                changed = colorBetween(column, index, toColor, currentClue.getColor()) || changed;
-//                toColor.clear();
-//            }
-//            locked = false;
-//            clueCounter += increment;
-//            currentClue = cluesUsed.getClue(index, clueCounter);
-//            if (currentClue == null) return changed;
-//            counter = currentClue.getHowMany();
-//        }
-//        return changed;
-//    }
-
     private boolean fillObvious(boolean column, int index, boolean backwards) {
         int increment = backwards ? -1 : 1;
-        int bound = backwards ? 0 : column ? grid.length - 1 : grid[0].length - 1;
+        int bound = backwards ? 0 : column ? height - 1 : width - 1;
         int fieldCounter = backwards ? bound : 0;
         Clues cluesUsed = column ? upperClues : leftClues;
         int cluesCounter = backwards ? cluesUsed.getClueLength(index) - 1 : 0;
@@ -151,7 +86,7 @@ public class Grid {
                 int higherBound = backwards ? lastClue.getLowerEnd() : currentClue.getLowerEnd();
                 crossBetween(column, index, lowerBound + 1, higherBound);
             } else {
-                changed = crossBetween(column, index, backwards ? column ? grid.length - 1 : grid[0].length - 1 : 0, backwards ? currentClue.getHigherEnd() : currentClue.getLowerEnd()) || changed;
+                changed = crossBetween(column, index, backwards ? column ? height - 1 : width - 1 : 0, backwards ? currentClue.getHigherEnd() : currentClue.getLowerEnd()) || changed;
             }
             fieldCounter = backwards ? currentClue.getLowerEnd() : currentClue.getHigherEnd();
             char lastColor = currentClue.getColor();
@@ -324,13 +259,13 @@ public class Grid {
 
     public boolean crossCompleted() {
         boolean changed = false;
-        for (int i = 0; i < grid.length; i++) {
+        for (int i = 0; i < height; i++) {
             if (leftClues.isComplete(i)) continue;
             changed = crossCompleted(false, i, false) || changed;
             changed = crossCompleted(false, i, true) || changed;
         }
 
-        for (int i = 0; i < grid[0].length; i++) {
+        for (int i = 0; i < width; i++) {
             if (upperClues.isComplete(i)) continue;
             changed = crossCompleted(true, i, false) || changed;
             changed = crossCompleted(true, i, true) || changed;
@@ -348,7 +283,7 @@ public class Grid {
         int increment = backwards ? -1 : 1;
         GridField currentField;
         Clues cluesUsed = column ? upperClues : leftClues;
-        int fieldCounter = backwards ? column ? grid.length - 1 : grid[0].length - 1 : 0;
+        int fieldCounter = backwards ? column ? height - 1 : width - 1 : 0;
         int clueCounter = backwards ? cluesUsed.getClueLength(index) - 1 : 0;
         ClueField currentClue = cluesUsed.getClue(index, clueCounter);
         boolean stuffed = true;
@@ -417,7 +352,7 @@ public class Grid {
         Clues cluesUsed = column ? upperClues : leftClues;
         ClueField currentClue = cluesUsed.getClue(index, clueIndex);
         if (currentClue.isDone()) {
-            LOGGER.warning("Trying to set clue that is already complete... Skipping");
+            //LOGGER.warning("Trying to set clue that is already complete... Skipping");
             return;
         }
         char color = getField(column, index, cell).getColor();
@@ -445,7 +380,7 @@ public class Grid {
             }
         } else {
             //It is the last clue
-            int max = column? grid.length : grid[0].length;
+            int max = column ? height : width;
             crossBetween(column, index, higherEnd, max);
         }
         if (previousClue != null) {
@@ -495,7 +430,7 @@ public class Grid {
     }
 
     private int howLongIsColorChain(boolean column, int index, boolean backwards, int start) {
-        int max = backwards ? 0 : column ? grid.length - 1 : grid[0].length - 1;
+        int max = backwards ? 0 : column ? height - 1 : width - 1;
         int counter = 0;
         int increment = backwards ? -1 : 1;
         GridField currentField = getField(column, index, start);
@@ -514,7 +449,7 @@ public class Grid {
 
     private int findNextSpaceForClue(boolean column, int index, boolean backwards, int start, ClueField clue) {
         int increment = backwards ? -1 : 1;
-        int max = backwards ? 0 : column ? grid.length - 1 : grid[0].length - 1;
+        int max = backwards ? 0 : column ? height - 1 : width - 1;
         int fieldCounter = start;
         GridField currentField = getField(column, index, start);
         int counter = clue.getHowMany();
@@ -568,9 +503,9 @@ public class Grid {
         int i = start;
         int counter = 0;
 
-        int boundary = backwards? 0 : column ? height : width;
+        int boundary = backwards ? 0 : column ? height : width;
         GridField field;
-        while ((backwards? (i >= boundary) : (i < boundary)) && counter < clue.getHowMany()) {
+        while ((backwards ? (i >= boundary) : (i < boundary)) && counter < clue.getHowMany()) {
             field = getField(column, index, i);
 
             if (!field.isCross()) counter++;
@@ -578,7 +513,7 @@ public class Grid {
             else i++;
         }
 
-        if (backwards? i >= 0 : i < boundary) {
+        if (backwards ? i >= 0 : i < boundary) {
             field = getField(column, index, i);
             while (field.getColor() == clue.getColor()) {
                 if (backwards) i--;
@@ -615,17 +550,50 @@ public class Grid {
         return sb.toString();
     }
 
+    private String getColInStringDetailed(int col) {
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < upperClues.getClueLength(col); i++) {
+            sb.append(upperClues.getClue(col, i).getColor()).append("|").append(upperClues.getClue(col, i).getHowMany()).append(" ");
+        }
+
+        sb.append(" = ");
+        for (int i = 0; i < height; i++) {
+            if (grid[i][col].isCross()) {
+                sb.append("-");
+            } else
+                sb.append(grid[i][col].getColor());
+        }
+        return sb.toString();
+    }
+
+    private String getRowInStringDetailed(int row) {
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < leftClues.getClueLength(row); i++) {
+            sb.append(leftClues.getClue(row, i).getColor()).append("|").append(leftClues.getClue(row, i).getHowMany()).append(" ");
+        }
+
+        sb.append(" = ");
+        for (int i = 0; i < width; i++) {
+            if (grid[row][i].isCross()) {
+                sb.append("-");
+            } else
+                sb.append(grid[row][i].getColor());
+        }
+        return sb.toString();
+    }
+
     @Override
     public String toString() {
-        final StringBuilder sb = new StringBuilder("Grid{");
+        final StringBuilder sb = new StringBuilder();
         for (int i = 0; i < height; i++) {
-            sb.append('\n');
+            if (i != 0) sb.append('\n');
             for (int j = 0; j < width; j++) {
-                if (grid[i][j].isCross()) sb.append('+');
-                else sb.append(grid[i][j].getColor());
+//                if (grid[i][j].isCross()) sb.append('+');
+//                else sb.append(grid[i][j].getColor());
+                sb.append(grid[i][j].getColor());
             }
         }
-        sb.append('}');
+        sb.append('\n');
         return sb.toString();
     }
 
@@ -637,22 +605,240 @@ public class Grid {
         boolean changed;
         do {
             changed = generateBounds();
-            printDifference();
+            //printDifference();
             if (completed()) return true;
-            changed = fillObvious() || changed;
-            printDifference();
-            changed = crossCompleted() || changed;
+            boolean currChanged;
+//            currChanged = fillObvious();
+            //          if (currChanged) LOGGER.info("fillObvious() changed something!");
+            //        changed = currChanged || changed;
+            //printDifference();
+            currChanged = crossCompleted();
+//            if (currChanged) LOGGER.info("crossCompleted() changed something!");
+            changed = currChanged || changed;
+            changed = fillSingles() || changed;
+            currChanged = crossLines();
+//            if (currChanged) LOGGER.info("crossLines() changed something!");
+            changed = currChanged || changed;
             crossFullLines();
-            printDifference();
-            System.out.println(this);
+            //printDifference();
+            //System.out.println(this);
             if (completed()) return true;
         } while (changed);
-
+        checkSolution();
         return false;
     }
 
+    /**
+     * Fills tooth of same color when there is only one clue that has that color
+     */
+    private boolean fillSingles() {
+        boolean changed = false;
+        for (int i = 0; i < height; i++) {
+            if (leftClues.isComplete(i)) continue;
+            changed = fillSingles(false, i) || changed;
+            changed = fillSingles(false, i) || changed;
+        }
+
+        for (int i = 0; i < width; i++) {
+            if (upperClues.isComplete(i)) continue;
+            changed = fillSingles(true, i) || changed;
+            changed = fillSingles(true, i) || changed;
+        }
+        return changed;
+    }
+
+    private boolean fillSingles(boolean column, int index) {
+        Clues cluesUsed = column ? upperClues : leftClues;
+        int fieldCounter = 0;
+        boolean changed = false;
+
+        Collection<ClueField> singleColors = cluesUsed.getSingleColors(index);
+
+        for (ClueField clueField : singleColors) {
+            while (getField(column, index, fieldCounter).getColor() != clueField.getColor()) {
+                fieldCounter = findNextBlock(column, index, fieldCounter);
+                if (fieldCounter < 0) break;
+                if (getField(column, index, fieldCounter).getColor() != clueField.getColor()) {
+                    fieldCounter += howLongIsColorChain(column, index, false, fieldCounter);
+                }
+            }
+            if (fieldCounter < 0) {
+                fieldCounter = 0;
+                continue;
+            }
+            int max = getLastCellWithColor(column, index, fieldCounter, clueField.getColor(), clueField.getHowMany());
+            if (max > fieldCounter) {
+                for (int i = fieldCounter; i <= max; i++) {
+                    changed = getField(column, index, i).setColor(clueField.getColor()) || changed;
+                    getField(column, index, i).setLocked(true);
+                }
+            }
+
+            fieldCounter = 0;
+        }
+
+        return changed;
+    }
+
+    private int getLastCellWithColor(boolean column, int index, int start, char color, int max) {
+        GridField currField;
+        for (int i = start + max; i > start; i--) {
+            currField = getField(column, index, i);
+            if (currField == null) continue;
+            if (currField.getColor() == color) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    private boolean crossLines(boolean column, int index) {
+        boolean changed = false;
+        Clues cluesUsed = column ? upperClues : leftClues;
+        int clueCounter = 0;
+        int fieldCounter = 0;
+        ClueField currentClue = cluesUsed.getClue(index, clueCounter);
+        GridField currentField;
+        int[] cluesCoords = new int[cluesUsed.getClueLength(index)];
+        while (currentClue != null) {
+            fieldCounter = findNextBlock(column, index, fieldCounter);
+            currentField = getField(column, index, fieldCounter);
+            if (currentField == null || currentField.getColor() != currentClue.getColor()) return false;
+            int size = getBlockSize(column, index, fieldCounter);
+            if (size != currentClue.getHowMany()) return false;
+            cluesCoords[clueCounter] = fieldCounter;
+            fieldCounter += size;
+            clueCounter++;
+            currentClue = cluesUsed.getClue(index, clueCounter);
+        }
+
+        for (int i = 0; i < cluesCoords.length; i++) {
+            changed = lockClue(column, index, i, cluesCoords[i]) || changed;
+        }
+        return changed;
+    }
+
+    private int findNextBlock(boolean column, int index, int start) {
+        GridField field = getField(column, index, start);
+        while (field.getColor() == '_') {
+            field = getField(column, index, ++start);
+            if (field == null) return -1;
+        }
+        return start;
+    }
+
+    /**
+     * Returns size of block of specified color... Including spaces.
+     */
+    private int getBlockSize(boolean column, int index, int start) {
+        int counter = 1;
+        char color = getField(column, index, start).getColor();
+        GridField currField = getField(column, index, start + counter);
+        while (currField != null && currField.getColor() == color) {
+            counter++;
+            currField = getField(column, index, start + counter);
+        }
+        return counter;
+    }
+
+    private boolean crossLines() {
+        boolean changed = false;
+        for (int i = 0; i < height; i++) {
+            if (!leftClues.isComplete(i))
+                changed = crossLines(false, i) || changed;
+        }
+        for (int i = 0; i < width; i++) {
+            if (!upperClues.isComplete(i)) {
+                changed = crossLines(true, i) || changed;
+            }
+        }
+        return changed;
+    }
+
+    /**
+     * Locks specified clue and cells surrounding it if it is nesessary
+     *
+     * @param fieldCounter anywhere in clues color field
+     */
+    private boolean lockClue(boolean column, int index, int clueCounter, int fieldCounter) {
+        boolean changed = false;
+        Clues cluesUsed = column ? upperClues : leftClues;
+        char color = getField(column, index, fieldCounter).getColor();
+        boolean upper = true;
+        boolean lower = true;
+        int lowerOffset = fieldCounter, upperOffset = fieldCounter;
+        int offset = 0;
+        GridField currField;
+        while (upper || lower) {
+            if (upper) {
+                currField = getField(column, index, fieldCounter + offset);
+                if (currField == null || currField.getColor() != color) {
+                    upper = false;
+                    upperOffset = fieldCounter + offset - 1;
+                } else {
+                    currField.setLocked(true);
+                }
+            }
+            if (lower) {
+                currField = getField(column, index, fieldCounter - offset);
+                if (currField == null || currField.getColor() != color) {
+                    lower = false;
+                    lowerOffset = fieldCounter - offset + 1;
+                } else {
+                    currField.setLocked(true);
+                }
+            }
+            offset++;
+        }
+        ClueField currentClue = cluesUsed.getClue(index, clueCounter);
+        if (currentClue.isDone()) {
+            if (currentClue.getHigherEnd() != upperOffset || currentClue.getLowerEnd() != lowerOffset) {
+                LOGGER.severe("Somebody set this clue incorrectly! " + currentClue + " on line: " + getInStringDetailed(column, index));
+                cluesUsed.getClue(index, clueCounter).setDone(lowerOffset, upperOffset);
+                changed = true;
+            }
+        } else {
+            cluesUsed.getClue(index, clueCounter).setDone(lowerOffset, upperOffset);
+            changed = true;
+        }
+
+        ClueField nextClue = cluesUsed.getClue(index, clueCounter + 1);
+        if (nextClue != null) {
+            if (nextClue.isDone()) {
+                if (nextClue.getLowerEnd() > upperOffset + 1) {
+                    changed = crossBetween(column, index, upperOffset + 1, nextClue.getLowerEnd()) || changed;
+                }
+            } else if (nextClue.getColor() == color) {
+                GridField toCross = getField(column, index, upperOffset + 1);
+                if (toCross != null) changed = toCross.crossOut() || changed;
+            }
+        } else {
+            changed = crossBetween(column, index, column ? height - 1 : width - 1, upperOffset) || changed;
+        }
+        nextClue = cluesUsed.getClue(index, clueCounter - 1);
+        if (nextClue != null) {
+            if (nextClue.isDone()) {
+                if (nextClue.getHigherEnd() < lowerOffset - 1) {
+                    changed = crossBetween(column, index, lowerOffset - 1, nextClue.getHigherEnd()) || changed;
+                }
+            } else if (nextClue.getColor() == color) {
+                GridField toCross = getField(column, index, lowerOffset - 1);
+                if (toCross != null) changed = toCross.crossOut() || changed;
+            }
+        } else {
+            changed = crossBetween(column, index, 0, lowerOffset) || changed;
+        }
+        return changed;
+    }
+
+    private String getInStringDetailed(boolean column, int index) {
+        if (column) {
+            return getColInString(index);
+        } else return getRowInString(index);
+    }
+
     private void crossFullLines() {
-        for (int y = 0; y < grid.length; y++) {
+        for (int y = 0; y < height; y++) {
             if (leftClues.isComplete(y)) continue;
 
             ArrayList<Integer> lowers = new ArrayList<>();
@@ -660,7 +846,7 @@ public class Grid {
             boolean full = true;
             char lastColor = 0;
             boolean inColor = false;
-            for (int x = 0; x < grid[0].length; x++) {
+            for (int x = 0; x < width; x++) {
                 if (!grid[y][x].isLocked()) {
                     full = false;
                     break;
@@ -683,13 +869,13 @@ public class Grid {
 
             if (full) {
                 if (highers.size() < lowers.size()) {
-                    highers.add(grid[0].length - 1);
+                    highers.add(width - 1);
                 }
                 leftClues.setCluesDone(y, lowers, highers);
             }
         }
 
-        for (int x = 0; x < grid[0].length; x++) {
+        for (int x = 0; x < width; x++) {
             if (upperClues.isComplete(x)) continue;
 
             ArrayList<Integer> lowers = new ArrayList<>();
@@ -697,7 +883,7 @@ public class Grid {
             boolean full = true;
             char lastColor = 0;
             boolean inColor = false;
-            for (int y = 0; y < grid.length; y++) {
+            for (int y = 0; y < height; y++) {
                 if (!grid[y][x].isLocked()) {
                     full = false;
                     break;
@@ -720,7 +906,7 @@ public class Grid {
 
             if (full) {
                 if (highers.size() < lowers.size()) {
-                    highers.add(grid.length - 1);
+                    highers.add(height - 1);
                 }
                 upperClues.setCluesDone(x, lowers, highers);
             }
@@ -739,7 +925,7 @@ public class Grid {
         if (solution == null) return true;
 
         int stringCounter = 0;
-        for (int y = 0; y < grid.length; y++) {
+        for (int y = 0; y < height; y++) {
             String line = getRowInString(y);
             for (int x = 0; x < line.length(); x++) {
                 if (line.charAt(x) != solution.charAt(stringCounter++)) {
@@ -760,7 +946,7 @@ public class Grid {
 
         int counter = 0;
         int stringCounter = 0;
-        for (int y = 0; y < grid.length; y++) {
+        for (int y = 0; y < height; y++) {
             String line = getRowInString(y);
             int currCounter = 0;
             StringBuilder sb = new StringBuilder();

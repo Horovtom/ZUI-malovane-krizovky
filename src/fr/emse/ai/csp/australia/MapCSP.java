@@ -51,6 +51,10 @@ public class MapCSP extends CSP {
         addConstraint(new NotEqualConstraint(NSW, V));
     }
 
+    public static void main(String[] args) {
+        MapCSP csp = new MapCSP();
+    }
+
     /**
      * Returns the principle states and territories of Australia as a list of
      * variables.

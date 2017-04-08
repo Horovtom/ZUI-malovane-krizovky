@@ -1,9 +1,13 @@
 package student;
 
+import java.util.logging.Logger;
+
 /**
  * Created by Hermes235 on 30.3.2017.
  */
 public class ClueField {
+    private static final Logger LOGGER = Logger.getLogger(ClueField.class.getName());
+
     private final char color;
     private final int howMany;
     private boolean done = false;
@@ -52,6 +56,10 @@ public class ClueField {
         } else {
             lowerEnd = end1;
             higherEnd = end2;
+        }
+
+        if (higherEnd - lowerEnd != howMany - 1) {
+            LOGGER.severe("Trying to set this clue as done even though there are wrong bounds!");
         }
     }
 }
