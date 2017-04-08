@@ -310,7 +310,22 @@ public class GridTest {
 
     @Test
     public void test_dino() throws Exception {
-        //TODO: IMPLEMENT
+        CSPMain.setSolution(new BufferedReader(new FileReader(new File("/home/lactosis/Documents/Programming/Java/JAG/ZUI-malovane-krizovky/src/student/examples/dino.out.txt"))));
+        CSPMain.parseInput(new FileInputStream(new File("/home/lactosis/Documents/Programming/Java/JAG/ZUI-malovane-krizovky/src/student/examples/dino.txt")));
+        String result = CSPMain.getResult();
+        assertFalse(result == null);
+        StringReader reader = new StringReader(result);
+        BufferedReader bufferedReader = new BufferedReader(reader);
+        System.out.println("Got: \n" + result + "\nShould be:");
+        BufferedReader expected = new BufferedReader(new FileReader(new File("/home/lactosis/Documents/Programming/Java/JAG/ZUI-malovane-krizovky/src/student/examples/dino.out.txt")));
+        String line;
+        while (bufferedReader.ready() && expected.ready()) {
+            line = expected.readLine();
+            System.out.println(line);
+            assertEquals(line, bufferedReader.readLine());
+        }
+        assertFalse(expected.ready());
+        assertTrue(bufferedReader.readLine() == null);
     }
 
     @Test
