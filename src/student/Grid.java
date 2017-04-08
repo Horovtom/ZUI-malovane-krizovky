@@ -14,9 +14,32 @@ public class Grid {
     private LeftClues leftClues;
     private UpperClues upperClues;
     private GridField[][] grid;
-    private boolean completed = false;
     private int width, height;
     private String solution = null;
+
+    public void save() {
+        leftClues.save();
+        upperClues.save();
+
+        for (GridField[] gridFields : grid) {
+            for (GridField gridField : gridFields) {
+                gridField.save();
+            }
+        }
+    }
+
+    public void load() {
+        leftClues.load();
+        upperClues.load();
+
+        for (GridField[] gridFields : grid) {
+            for (GridField gridField : gridFields) {
+                gridField.load();
+            }
+        }
+
+
+    }
 
     public Grid(LeftClues leftClues, UpperClues upperClues) {
         this.leftClues = leftClues;
@@ -606,7 +629,7 @@ public class Grid {
         do {
             changed = generateBounds();
             //printDifference();
-            if (completed()) return true;
+            if (isComplete()) return true;
             boolean currChanged;
 //            currChanged = fillObvious();
             //          if (currChanged) LOGGER.info("fillObvious() changed something!");
@@ -622,10 +645,18 @@ public class Grid {
             crossFullLines();
             //printDifference();
             //System.out.println(this);
-            if (completed()) return true;
+            if (isComplete()) return true;
         } while (changed);
         checkSolution();
         return false;
+    }
+
+    /**
+     * @return heuristically best variable to change
+     */
+    public CSPVariable getNextVariable() {
+        //TODO: IMPLEMENT
+        return null;
     }
 
     /**
@@ -753,6 +784,10 @@ public class Grid {
             }
         }
         return changed;
+    }
+
+    public boolean isComplete() {
+        return leftClues.isComplete() && upperClues.isComplete();
     }
 
     /**
@@ -915,12 +950,6 @@ public class Grid {
 
     }
 
-    private boolean completed() {
-        if (completed) return true;
-        completed = leftClues.isComplete() && upperClues.isComplete();
-        return completed;
-    }
-
     public boolean checkSolution() {
         if (solution == null) return true;
 
@@ -968,5 +997,30 @@ public class Grid {
 
     public void loadSolution(String string) {
         solution = string;
+    }
+
+    public boolean isValid() {
+        boolean valid = true;
+
+
+    }
+
+    private boolean isValid(boolean column, int index) {
+        Clues cluesUsed = column ? upperClues : leftClues;
+        ClueField currentClue = cluesUsed.getClue(index, 0);
+        GridField currentField = getField(column, index, 0);
+        int fieldCounter = 0;
+        int clueCounter = 0;
+
+        while (currentClue != null) {
+            int newFieldCounter = findNextBlock(column, index, fieldCounter);
+            if (newFieldCounter == -1) return canItFit(column, index, fieldCounter, clueCounter);
+            fieldCounter = newFieldCounter;
+            currentField = getField(column, index, fieldCounter);
+            while (currentClue.getColor() != currentField.getColor()) {
+                //TODO: THIS IS AVSOLUTELY BADLY!!! HNGUOBEUO
+            }
+        }
+
     }
 }

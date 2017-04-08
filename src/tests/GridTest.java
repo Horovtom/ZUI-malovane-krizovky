@@ -251,16 +251,16 @@ public class GridTest {
 
         //TODO: THIS SHOULD BE SOLVABLE AFTER SOLVING THE [1 2] __B_B__ problem
 
-//        assertEquals("____BBBBBB", grid.getRowInString(0));
-//        assertEquals("___B_B_B_B", grid.getRowInString(1));
-//        assertEquals("__BB_B_BB_", grid.getRowInString(2));
-//        assertEquals("_B_B_BB_B_", grid.getRowInString(3));
-//        assertEquals("_B_B_BBBB_", grid.getRowInString(4));
-//        assertEquals("_B_BB___B_", grid.getRowInString(5));
-//        assertEquals("_BBBBBBBB_", grid.getRowInString(6));
-//        assertEquals("__B____B__", grid.getRowInString(7));
-//        assertEquals("_B_BBBB___", grid.getRowInString(8));
-//        assertEquals("BB________", grid.getRowInString(9));
+        assertEquals("____BBBBBB", grid.getRowInString(0));
+        assertEquals("___B_B_B_B", grid.getRowInString(1));
+        assertEquals("__BB_B_BB_", grid.getRowInString(2));
+        assertEquals("_B_B_BB_B_", grid.getRowInString(3));
+        assertEquals("_B_B_BBBB_", grid.getRowInString(4));
+        assertEquals("_B_BB___B_", grid.getRowInString(5));
+        assertEquals("_BBBBBBBB_", grid.getRowInString(6));
+        assertEquals("__B____B__", grid.getRowInString(7));
+        assertEquals("_B_BBBB___", grid.getRowInString(8));
+        assertEquals("BB________", grid.getRowInString(9));
     }
 
     @Test

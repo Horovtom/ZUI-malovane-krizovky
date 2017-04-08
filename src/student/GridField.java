@@ -1,7 +1,6 @@
 package student;
 
-import org.junit.Test;
-
+import java.util.ArrayList;
 import java.util.logging.Logger;
 
 /**
@@ -11,6 +10,9 @@ public class GridField {
     private static final Logger LOGGER = Logger.getLogger(GridField.class.getName());
     private char color='_';
     private boolean locked = false;
+
+    private ArrayList<Character> savedColor = new ArrayList<>();
+    private ArrayList<Boolean> savedLocked = new ArrayList<>();
 
     public GridField() {}
 
@@ -79,5 +81,22 @@ public class GridField {
 
     public boolean isSpace() {
         return color == '_' && !locked;
+    }
+
+    public void save() {
+        savedColor.add(color);
+        savedLocked.add(locked);
+    }
+
+    public void load() {
+        locked = savedLocked.get(savedLocked.size() - 1);
+        savedLocked.remove(savedLocked.size() - 1);
+        color = savedColor.get(savedColor.size() - 1);
+        savedColor.remove(savedColor.size() - 1);
+    }
+
+    public void setColorLocked(char color) {
+        this.color = color;
+        this.locked = true;
     }
 }

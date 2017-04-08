@@ -1,5 +1,6 @@
 package student;
 
+import java.util.ArrayList;
 import java.util.logging.Logger;
 
 /**
@@ -12,6 +13,9 @@ public class ClueField {
     private final int howMany;
     private boolean done = false;
     private int lowerEnd, higherEnd;
+
+    private ArrayList<Boolean> savedDone = new ArrayList<>();
+    private ArrayList<int[]> savedBounds = new ArrayList<>();
 
     public ClueField(char color, int howMany) {
         this.color = color;
@@ -61,5 +65,19 @@ public class ClueField {
         if (higherEnd - lowerEnd != howMany - 1) {
             LOGGER.severe("Trying to set this clue as done even though there are wrong bounds!");
         }
+    }
+
+    public void save() {
+        savedDone.add(done);
+        savedBounds.add(new int[]{lowerEnd, higherEnd});
+    }
+
+    public void load() {
+        done = savedDone.get(savedDone.size() - 1);
+        savedDone.remove(savedDone.size() - 1);
+        int[] toLoadBounds = savedBounds.get(savedBounds.size() - 1);
+        savedBounds.remove(savedBounds.size() - 1);
+        lowerEnd = toLoadBounds[0];
+        higherEnd = toLoadBounds[1];
     }
 }

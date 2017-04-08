@@ -13,10 +13,39 @@ public abstract class Clues {
     protected ArrayList<ArrayList<ClueField>> clues = new ArrayList<>();
     private ArrayList<Boolean> completed = new ArrayList<>();
     private boolean complete = false;
-    private ArrayList<Collection<ClueField>> singleColors = new ArrayList<>();
+    private final ArrayList<Collection<ClueField>> singleColors = new ArrayList<>();
+    private ArrayList<ArrayList<Boolean>> savedCompleted = new ArrayList<>();
 
     public Clues() {
     }
+
+    public void save() {
+        ArrayList<Boolean> currentCompleted = new ArrayList<>();
+        currentCompleted.addAll(completed);
+        savedCompleted.add(currentCompleted);
+
+        for (ArrayList<ClueField> clue : clues) {
+            for (ClueField clueField : clue) {
+                clueField.save();
+            }
+        }
+    }
+
+    public void load() {
+        if (savedCompleted.size() == 0) LOGGER.severe("Nothing to load!");
+        completed = savedCompleted.get(savedCompleted.size() - 1);
+        savedCompleted.remove(completed);
+
+        for (ArrayList<ClueField> clue : clues) {
+            for (ClueField clueField : clue) {
+                clueField.load();
+            }
+        }
+
+        isComplete();
+    }
+
+
 
     public Collection<ClueField> getSingleColors(int index) {
         return this.singleColors.get(index);
