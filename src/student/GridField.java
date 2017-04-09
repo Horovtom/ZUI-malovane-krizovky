@@ -31,6 +31,7 @@ public class GridField {
         if (this.color == color) return false;
         if (locked) LOGGER.warning("Trying to set locked cell... Doing so...");
         this.color = color;
+        this.locked = true;
         return true;
     }
 

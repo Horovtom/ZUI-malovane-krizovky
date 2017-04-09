@@ -15,6 +15,7 @@ public abstract class Clues {
     private boolean complete = false;
     private final ArrayList<Collection<ClueField>> singleColors = new ArrayList<>();
     private ArrayList<ArrayList<Boolean>> savedCompleted = new ArrayList<>();
+    private boolean valid;
 
     public Clues() {
     }
@@ -212,7 +213,7 @@ public abstract class Clues {
                     completed.set(i, true);
                 } else {
                     complete = false;
-                    return false;
+//                    return false;
                 }
             }
         }
@@ -226,5 +227,22 @@ public abstract class Clues {
             getClue(index, i).setDone(lowers.get(i), highers.get(i));
         }
         isComplete(index);
+    }
+
+    public boolean isValid() {
+        checkValidity();
+        return valid;
+    }
+
+    private void checkValidity() {
+        for (ArrayList<ClueField> clue : clues) {
+            for (ClueField clueField : clue) {
+                if (!clueField.isValid()) {
+                    valid = false;
+                    return;
+                }
+            }
+        }
+        valid = true;
     }
 }

@@ -21,4 +21,12 @@ public class CSPVariable {
     public GridField getField() {
         return field;
     }
+
+    @Override
+    public String toString() {
+        return "CSPVariable{" +
+                "field=" + field +
+                "\n domain=" + domain +
+                '}';
+    }
 }

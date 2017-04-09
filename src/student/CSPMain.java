@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
 import java.util.StringTokenizer;
 import java.util.logging.Logger;
 
@@ -14,6 +15,7 @@ public class CSPMain {
     private static final Logger LOGGER = Logger.getLogger(CSPMain.class.getName());
     private static Grid grid = null;
     private static String solution = null;
+    private static ArrayList<String> results = new ArrayList<>();
 
     public static void main(String[] args) {
         parseInput(System.in);
@@ -43,30 +45,38 @@ public class CSPMain {
                 grid.loadSolution(solution);
                 solution = null;
             }
-            long myTime = System.currentTimeMillis();
-
-            grid.solve();
-
-            System.out.println("Solved in: " + (System.currentTimeMillis() - myTime) + "ms.");
+            solve();
             //System.out.println(grid);
-
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    public static void printResult() {
-        if (grid == null) {
-            LOGGER.severe("There is no grid instantiated!");
-            return;
+    public static void solve() {
+        long myTime = System.currentTimeMillis();
+
+        if (!grid.solve()) {
+            CSP csp = new CSP(grid);
+            csp.solveIt();
+            results = csp.getSolutions();
+        } else {
+            results.add(grid.toString());
         }
-        System.out.println(grid);
+
+        System.out.println("Solved in: " + (System.currentTimeMillis() - myTime) + "ms.");
     }
 
-    public static String getResult() {
+    public static void printResult() {
+        System.out.println(results.size());
+        for (int i = 0; i < results.size(); i++) {
+            System.out.println(results.get(i));
+        }
+    }
+
+    public static ArrayList<String> getResult() {
         if (grid == null) return null;
 
-        return grid.toString();
+        return results;
     }
 
     public static void setSolution(BufferedReader solution) {
@@ -79,5 +89,15 @@ public class CSPMain {
             e.printStackTrace();
         }
         CSPMain.solution = string.toString();
+    }
+
+    public static void setGrid(Grid grid) {
+        CSPMain.grid = grid;
+    }
+
+    public static void reset() {
+        grid = null;
+        solution = null;
+        results.clear();
     }
 }

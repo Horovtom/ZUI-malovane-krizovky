@@ -16,6 +16,7 @@ public class ClueField {
 
     private ArrayList<Boolean> savedDone = new ArrayList<>();
     private ArrayList<int[]> savedBounds = new ArrayList<>();
+    private boolean valid = true;
 
     public ClueField(char color, int howMany) {
         this.color = color;
@@ -63,6 +64,7 @@ public class ClueField {
         }
 
         if (higherEnd - lowerEnd != howMany - 1) {
+            valid = false;
             LOGGER.severe("Trying to set this clue as done even though there are wrong bounds!");
         }
     }
@@ -79,5 +81,10 @@ public class ClueField {
         savedBounds.remove(savedBounds.size() - 1);
         lowerEnd = toLoadBounds[0];
         higherEnd = toLoadBounds[1];
+        valid = true;
+    }
+
+    public boolean isValid() {
+        return valid;
     }
 }

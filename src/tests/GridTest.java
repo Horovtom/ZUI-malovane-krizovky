@@ -5,6 +5,7 @@ import org.junit.Test;
 import student.*;
 
 import java.io.*;
+import java.util.ArrayList;
 
 import static org.junit.Assert.*;
 
@@ -27,6 +28,26 @@ public class GridTest {
         uc.addLineOfClues("C,3");
         uc.addLineOfClues("B,1,C,1");
         testGrid1 = new Grid(lc, uc);
+    }
+
+    @Test
+    public void test_Stingray() throws Exception {
+        CSPMain.reset();
+        CSPMain.setSolution(new BufferedReader(new FileReader(new File("/home/lactosis/Documents/Programming/Java/JAG/ZUI-malovane-krizovky/src/student/examples/Stingray.out.txt"))));
+        CSPMain.parseInput(new FileInputStream(new File("/home/lactosis/Documents/Programming/Java/JAG/ZUI-malovane-krizovky/src/student/examples/Stingray.txt")));
+        ArrayList<String> result = CSPMain.getResult();
+        assertEquals(1, result.size());
+        String resultString = result.get(0);
+        StringReader reader = new StringReader(resultString);
+        BufferedReader bufferedReader = new BufferedReader(reader);
+        BufferedReader expected = new BufferedReader(new FileReader(new File("/home/lactosis/Documents/Programming/Java/JAG/ZUI-malovane-krizovky/src/student/examples/Stingray.out.txt")));
+        String line;
+        while (bufferedReader.ready() && expected.ready()) {
+            line = expected.readLine();
+            assertEquals(line, bufferedReader.readLine());
+        }
+        assertFalse(expected.ready());
+        assertTrue(bufferedReader.readLine() == null);
     }
 
     @Test
@@ -219,6 +240,34 @@ public class GridTest {
     }
 
     @Test
+    public void testLeafManual() throws Exception {
+        String result = "_________B\n" +
+                "___BBBB_BB\n" +
+                "__B___BB__\n" +
+                "_BBBBBB_B_\n" +
+                "B____BB_B_\n" +
+                "BBBBB_B_B_\n" +
+                "B__BB_B_B_\n" +
+                "BBB_B_BB__\n" +
+                "B_BBBBB___\n" +
+                "BB________";
+
+        StringReader sr = new StringReader(result);
+        BufferedReader br = new BufferedReader(sr);
+
+        assertEquals("____BBBBBB", br.readLine());
+        assertEquals("___B_B_B_B", br.readLine());
+        assertEquals("__BB_B_BB_", br.readLine());
+        assertEquals("_B_B_BB_B_", br.readLine());
+        assertEquals("_B_B_BBBB_", br.readLine());
+        assertEquals("_B_BB___B_", br.readLine());
+        assertEquals("_BBBBBBBB_", br.readLine());
+        assertEquals("__B____B__", br.readLine());
+        assertEquals("_B_BBBB___", br.readLine());
+        assertEquals("BB________", br.readLine());
+    }
+
+    @Test
     public void leaf10x10() throws Exception {
         LeftClues lc = new LeftClues();
         UpperClues uc = new UpperClues();
@@ -247,26 +296,60 @@ public class GridTest {
         Grid grid = new Grid(lc, uc);
         grid.loadSolution("____BBBBBB___B_B_B_B__BB_B_BB__B_B_BB_B__B_B_BBBB__B_BB___B__BBBBBBBB___B____B___B_BBBB___BB________");
 
-        assertFalse(grid.solve());
+        CSPMain.setGrid(grid);
+        CSPMain.solve();
+        //assertFalse(grid.solve());
 
-        //TODO: THIS SHOULD BE SOLVABLE AFTER SOLVING THE [1 2] __B_B__ problem
 
-        assertEquals("____BBBBBB", grid.getRowInString(0));
-        assertEquals("___B_B_B_B", grid.getRowInString(1));
-        assertEquals("__BB_B_BB_", grid.getRowInString(2));
-        assertEquals("_B_B_BB_B_", grid.getRowInString(3));
-        assertEquals("_B_B_BBBB_", grid.getRowInString(4));
-        assertEquals("_B_BB___B_", grid.getRowInString(5));
-        assertEquals("_BBBBBBBB_", grid.getRowInString(6));
-        assertEquals("__B____B__", grid.getRowInString(7));
-        assertEquals("_B_BBBB___", grid.getRowInString(8));
-        assertEquals("BB________", grid.getRowInString(9));
+        ArrayList<String> result = CSPMain.getResult();
+        assertFalse(result == null);
+
+        assertEquals(1, result.size());
+        StringReader sr = new StringReader(result.get(0));
+        BufferedReader br = new BufferedReader(sr);
+
+        assertEquals("____BBBBBB", br.readLine());
+        assertEquals("___B_B_B_B", br.readLine());
+        assertEquals("__BB_B_BB_", br.readLine());
+        assertEquals("_B_B_BB_B_", br.readLine());
+        assertEquals("_B_B_BBBB_", br.readLine());
+        assertEquals("_B_BB___B_", br.readLine());
+        assertEquals("_BBBBBBBB_", br.readLine());
+        assertEquals("__B____B__", br.readLine());
+        assertEquals("_B_BBBB___", br.readLine());
+        assertEquals("BB________", br.readLine());
+    }
+
+    @Test
+    public void test_tobaccoPipeManual() throws Exception {
+    }
+
+    @Test
+    public void test_tobaccoPipe() throws Exception {
+        CSPMain.reset();
+        CSPMain.setSolution(new BufferedReader(new FileReader(new File("/home/lactosis/Documents/Programming/Java/JAG/ZUI-malovane-krizovky/src/student/examples/tobaccoPipe.out.txt"))));
+        CSPMain.parseInput(new FileInputStream(new File("/home/lactosis/Documents/Programming/Java/JAG/ZUI-malovane-krizovky/src/student/examples/tobaccoPipe.txt")));
+        ArrayList<String> result = CSPMain.getResult();
+        assertEquals(1, result.size());
+        String resultString = result.get(0);
+        StringReader reader = new StringReader(resultString);
+        BufferedReader bufferedReader = new BufferedReader(reader);
+        BufferedReader expected = new BufferedReader(new FileReader(new File("/home/lactosis/Documents/Programming/Java/JAG/ZUI-malovane-krizovky/src/student/examples/tobaccoPipe.out.txt")));
+        String line;
+        while (bufferedReader.ready() && expected.ready()) {
+            line = expected.readLine();
+            assertEquals(line, bufferedReader.readLine());
+        }
+        assertFalse(expected.ready());
+        assertTrue(bufferedReader.readLine() == null);
     }
 
     @Test
     public void test_csp_example() throws Exception {
+        CSPMain.reset();
+        CSPMain.setSolution(new BufferedReader(new FileReader(new File("/home/lactosis/Documents/Programming/Java/JAG/ZUI-malovane-krizovky/src/student/examples/csp_example.txt.out.txt"))));
         CSPMain.parseInput(new FileInputStream(new File("/home/lactosis/Documents/Programming/Java/JAG/ZUI-malovane-krizovky/src/student/examples/csp_example.txt")));
-        String result = CSPMain.getResult();
+        String result = CSPMain.getResult().get(0);
         assertFalse(result == null);
         StringReader reader = new StringReader(result);
         BufferedReader bufferedReader = new BufferedReader(reader);
@@ -282,6 +365,11 @@ public class GridTest {
         assertTrue(bufferedReader.readLine() == null);
     }
 
+    @Test
+    public void MANUAL_test_SimpleMultiSol() throws Exception {
+        CSPMain.parseInput(new FileInputStream(new File("/home/lactosis/Documents/Programming/Java/JAG/ZUI-malovane-krizovky/src/student/examples/SimpleMultiline.txt")));
+        CSPMain.printResult();
+    }
 
     @Test
     public void test_input() throws Exception {
@@ -289,10 +377,49 @@ public class GridTest {
     }
 
     @Test
+    public void test_isValidSimple() throws Exception {
+        LeftClues lc = new LeftClues();
+        lc.addLineOfClues("B,1,B,2");
+        UpperClues uc = new UpperClues();
+        uc.addLineOfClues("B,1");
+        uc.addLineOfClues("B,1");
+        uc.addLineOfClues("B,1");
+        uc.addLineOfClues("B,1");
+        uc.addLineOfClues("B,1");
+        uc.addLineOfClues("B,1");
+        Grid grid = new Grid(lc, uc);
+        grid.setCell(1, 0, 'B');
+        grid.setCell(3, 0, 'B');
+        assertTrue(grid.isValid(false, 0));
+        grid.setCell(0, 0, 'B');
+        assertFalse(grid.isValid(false, 0));
+    }
+
+    @Test
+    public void test_isValidIntermediate() throws Exception {
+        LeftClues lc = new LeftClues();
+        lc.addLineOfClues("B,2,Y,1");
+        UpperClues uc = new UpperClues();
+        uc.addLineOfClues("B,1");
+        uc.addLineOfClues("B,1");
+        uc.addLineOfClues("B,1");
+        uc.addLineOfClues("B,1");
+        uc.addLineOfClues("B,1");
+        Grid grid = new Grid(lc, uc);
+        assertTrue(grid.isValid(false, 0));
+        grid.setCell(3, 0, 'B');
+        assertTrue(grid.isValid(false, 0));
+        grid.setCell(4, 0, 'B');
+        assertFalse(grid.isValid(false, 0));
+        grid.setCell(4, 0, 'Y');
+        assertTrue(grid.isValid(false, 0));
+    }
+
+    @Test
     public void test_krtek() throws Exception {
         CSPMain.setSolution(new BufferedReader(new FileReader(new File("/home/lactosis/Documents/Programming/Java/JAG/ZUI-malovane-krizovky/src/student/examples/krtek.txt.out.txt"))));
         CSPMain.parseInput(new FileInputStream(new File("/home/lactosis/Documents/Programming/Java/JAG/ZUI-malovane-krizovky/src/student/examples/krtek.txt")));
-        String result = CSPMain.getResult();
+        String result = CSPMain.getResult().get(0);
         assertFalse(result == null);
         StringReader reader = new StringReader(result);
         BufferedReader bufferedReader = new BufferedReader(reader);
@@ -302,7 +429,11 @@ public class GridTest {
         while (bufferedReader.ready() && expected.ready()) {
             line = expected.readLine();
             System.out.println(line);
-            assertEquals(line, bufferedReader.readLine());
+            String readLine = bufferedReader.readLine();
+            if (readLine == null) {
+                assertTrue(line == null || line.equals(""));
+            }
+            assertEquals(line, readLine);
         }
         assertFalse(expected.ready());
         assertTrue(bufferedReader.readLine() == null);
@@ -312,7 +443,7 @@ public class GridTest {
     public void test_dino() throws Exception {
         CSPMain.setSolution(new BufferedReader(new FileReader(new File("/home/lactosis/Documents/Programming/Java/JAG/ZUI-malovane-krizovky/src/student/examples/dino.out.txt"))));
         CSPMain.parseInput(new FileInputStream(new File("/home/lactosis/Documents/Programming/Java/JAG/ZUI-malovane-krizovky/src/student/examples/dino.txt")));
-        String result = CSPMain.getResult();
+        String result = CSPMain.getResult().get(0);
         assertFalse(result == null);
         StringReader reader = new StringReader(result);
         BufferedReader bufferedReader = new BufferedReader(reader);
