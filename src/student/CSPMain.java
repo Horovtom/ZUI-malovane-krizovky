@@ -6,19 +6,19 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.StringTokenizer;
-import java.util.logging.Logger;
 
 /**
  * Created by Hermes235 on 30.3.2017.
  */
 public class CSPMain {
-    private static final Logger LOGGER = Logger.getLogger(CSPMain.class.getName());
+    //private static final Logger LOGGER = Logger.getLogger(CSPMain.class.getName());
     private static Grid grid = null;
     private static String solution = null;
     private static ArrayList<String> results = new ArrayList<String>();
 
     public static void main(String[] args) {
         parseInput(System.in);
+
         printResult();
     }
 

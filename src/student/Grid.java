@@ -5,13 +5,12 @@ import student.abstracts.Clues;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Queue;
-import java.util.logging.Logger;
 
 /**
  * Created by Hermes235 on 30.3.2017.
  */
 public class Grid {
-    private static final Logger LOGGER = Logger.getLogger(Grid.class.getName());
+    //private static final Logger LOGGER = Logger.getLogger(Grid.class.getName());
     private LeftClues leftClues;
     private UpperClues upperClues;
     private GridField[][] grid;
@@ -370,7 +369,7 @@ public class Grid {
 
     private boolean colorBetween(boolean column, int index, int start, int end, char color) {
         if (start > end) {
-            LOGGER.warning("Start was bigger than end... skipping!");
+            //LOGGER.warning("Start was bigger than end... skipping!");
             return false;
         }
         boolean changed = false;
@@ -431,7 +430,7 @@ public class Grid {
         int oldFieldCounter = fieldCounter;
         fieldCounter = findNextSpaceForClue(column, index, backwards, fieldCounter, currentClue);
         if (fieldCounter == -1) {
-            LOGGER.severe("Unsolvable, not enough space for next clue...");
+            //LOGGER.severe("Unsolvable, not enough space for next clue...");
             valid = false;
             return true;
         }
@@ -453,7 +452,7 @@ public class Grid {
                     fieldCounter = findNextSpaceForClue(column, index, backwards, fieldCounter, currentClue);
                 } else if (currentField.getColor() == '_') stuffed = false;
                 else {
-                    LOGGER.severe("Can't fit next clue in this line... Unsolvable!");
+                    //LOGGER.severe("Can't fit next clue in this line... Unsolvable!");
                     valid = false;
                     return true;
                 }
@@ -490,7 +489,7 @@ public class Grid {
         }
         char color = getField(column, index, cell).getColor();
         if (color != currentClue.getColor()) {
-            LOGGER.severe("Cell color and specified clue color were not equal!");
+            //LOGGER.severe("Cell color and specified clue color were not equal!");
             valid = false;
             return;
         }
@@ -750,21 +749,13 @@ public class Grid {
             //printDifference();
             if (isComplete()) return true;
             boolean currChanged;
-//            currChanged = fillObvious();
-            //          if (currChanged) LOGGER.info("fillObvious() changed something!");
-            //        changed = currChanged || changed;
-            //printDifference();
             currChanged = crossCompleted();
-//            if (currChanged) LOGGER.info("crossCompleted() changed something!");
             changed = currChanged || changed;
             changed = fillSingles() || changed;
             currChanged = crossLines();
-//            if (currChanged) LOGGER.info("crossLines() changed something!");
             changed = currChanged || changed;
             crossFullLines();
             changed = fillObvious() || changed;
-            //printDifference();
-            //System.out.println(this);
             if (isComplete()) return true;
             if (!isValid()) return false;
         } while (changed);
@@ -1033,7 +1024,7 @@ public class Grid {
         ClueField currentClue = cluesUsed.getClue(index, clueCounter);
         if (currentClue.isDone()) {
             if (currentClue.getHigherEnd() != upperOffset || currentClue.getLowerEnd() != lowerOffset) {
-                LOGGER.severe("Somebody set this clue incorrectly! " + currentClue + " on line: " + getInStringDetailed(column, index));
+                ////LOGGER.severe("Somebody set this clue incorrectly! " + currentClue + " on line: " + getInStringDetailed(column, index));
                 cluesUsed.getClue(index, clueCounter).setDone(lowerOffset, upperOffset);
                 changed = true;
             }
@@ -1166,8 +1157,8 @@ public class Grid {
             for (int x = 0; x < line.length(); x++) {
                 if (line.charAt(x) != solution.charAt(stringCounter++)) {
                     if (!grid[y][x].isSpace()) {
-                        LOGGER.severe("Invalid solution! Expected: " + solution.charAt(stringCounter - 1) + ", got: " +
-                                line.charAt(x) + ", at x=" + x + ", y=" + y);
+                        //LOGGER.severe("Invalid solution! Expected: " + solution.charAt(stringCounter - 1) + ", got: " +
+                        //        line.charAt(x) + ", at x=" + x + ", y=" + y);
                         valid = false;
                         return false;
                     }

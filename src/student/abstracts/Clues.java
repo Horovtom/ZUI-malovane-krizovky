@@ -6,13 +6,12 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.StringTokenizer;
-import java.util.logging.Logger;
 
 /**
  * Created by Hermes235 on 30.3.2017.
  */
 public abstract class Clues {
-    private static final Logger LOGGER = Logger.getLogger(Clues.class.getName());
+    //private static final Logger LOGGER = Logger.getLogger(Clues.class.getName());
     protected ArrayList<ArrayList<ClueField>> clues = new ArrayList<ArrayList<ClueField>>();
     private ArrayList<Boolean> completed = new ArrayList<Boolean>();
     private boolean complete = false;
@@ -36,7 +35,7 @@ public abstract class Clues {
     }
 
     public void load() {
-        if (savedCompleted.size() == 0) LOGGER.severe("Nothing to load!");
+        //if (savedCompleted.size() == 0) LOGGER.severe("Nothing to load!");
         completed = savedCompleted.get(savedCompleted.size() - 1);
         savedCompleted.remove(completed);
 
@@ -102,7 +101,7 @@ public abstract class Clues {
 
     public void setComplete(int column) {
         if (column < 0 || column >= completed.size()) {
-            LOGGER.warning("Trying to access non-existent column");
+            //LOGGER.warning("Trying to access non-existent column");
             return;
         }
         completed.set(column, true);
@@ -110,7 +109,7 @@ public abstract class Clues {
 
     public boolean isComplete(int column) {
         if (column < 0 || column >= completed.size()) {
-            LOGGER.warning("Accessing non-existent clue column");
+            //LOGGER.warning("Accessing non-existent clue column");
             return false;
         }
         return completed.get(column);
@@ -159,7 +158,7 @@ public abstract class Clues {
      */
     public int getClueLength(int column) {
         if (clues.size() <= column) {
-            LOGGER.warning("Trying to access info about clue column, that is non-existent yet!");
+            //LOGGER.warning("Trying to access info about clue column, that is non-existent yet!");
             return 0;
         }
         return clues.get(column).size();
