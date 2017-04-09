@@ -13,24 +13,23 @@ public class CSP {
         this.grid = grid;
     }
 
-    public void solveIt() {
+    void solveIt() {
         if (solutions.size() > 0) return;
         solve();
-        if (solutions.size() == 0) System.out.println("null");
-        else refactorSolutions();
+        refactorSolutions();
     }
 
     private void refactorSolutions() {
         ArrayList<String> newSolutions = new ArrayList<String>();
-        for (int i = 0; i < solutions.size(); i++) {
-            if (!newSolutions.contains(solutions.get(i)))
-                newSolutions.add(solutions.get(i));
+        for (String solution : solutions) {
+            if (!newSolutions.contains(solution))
+                newSolutions.add(solution);
         }
         //solutions.stream().filter(solution -> !newSolutions.contains(solution)).forEach(newSolutions::add);
         solutions = newSolutions;
     }
 
-    public ArrayList<String> getSolutions() {
+    ArrayList<String> getSolutions() {
         return solutions;
     }
 

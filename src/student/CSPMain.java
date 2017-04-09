@@ -18,8 +18,8 @@ public class CSPMain {
 
     public static void main(String[] args) {
         parseInput(System.in);
-
         printResult();
+
     }
 
     public static void parseInput(InputStream is) {
@@ -68,8 +68,12 @@ public class CSPMain {
 
     public static void printResult() {
 //        System.out.println(results.size());
-        for (int i = 0; i < results.size(); i++) {
-            System.out.println(results.get(i));
+        if (results.size() == 0) {
+            System.out.println("null");
+            return;
+        }
+        for (String result : results) {
+            System.out.println(result);
         }
     }
 
