@@ -4,7 +4,6 @@ import student.abstracts.Clues;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Queue;
 
 /**
  * Created by Hermes235 on 30.3.2017.
@@ -47,8 +46,6 @@ public class Grid {
                 gridField.load();
             }
         }
-
-
     }
 
     private void init() {
@@ -60,20 +57,15 @@ public class Grid {
         }
         height = grid.length;
         width = grid[0].length;
-
         findEmptyLines();
     }
 
     private void findEmptyLines() {
         for (int i = 0; i < height; i++) {
-            if (leftClues.isComplete(i)) {
-                crossBetween(false, i, 0, width);
-            }
+            if (leftClues.isComplete(i)) crossBetween(false, i, 0, width);
         }
         for (int i = 0; i < width; i++) {
-            if (upperClues.isComplete(i)) {
-                crossBetween(true, i, 0, height);
-            }
+            if (upperClues.isComplete(i)) crossBetween(true, i, 0, height);
         }
     }
 
@@ -205,7 +197,6 @@ public class Grid {
 
     /**
      * Generates bounds for a specified column... Then it writes it into the grid
-     *
      * @param column Whether the specified index is relevant to row or column
      */
     private boolean generateBounds(boolean column, int index) {
@@ -285,7 +276,6 @@ public class Grid {
     }
 
     private boolean crossCompleted(boolean column, int index, boolean backwards) {
-
         boolean changed = false;
         int increment = backwards ? -1 : 1;
         GridField currentField;
@@ -357,6 +347,7 @@ public class Grid {
                     ClueField lc = cluesUsed.getClue(index, longestClue);
                     if (lc != null && length == lc.getHowMany()) {
                         setCompletedClue(column, index, fieldCounter, longestClue);
+                        if (currentClue == null) return changed;
                         fieldCounter = backwards ? currentClue.getLowerEnd() - 1 : currentClue.getHigherEnd() + 1;
                         currentClue = cluesUsed.getClue(index, longestClue);
                         changed = true;
@@ -450,7 +441,6 @@ public class Grid {
                 color == lowerField.getColor()) {
             lowerField = getField(column, index, --lowerEnd);
         }
-
 
         ClueField nextClue = cluesUsed.getClue(index, clueIndex + 1), previousClue = cluesUsed.getClue(index, clueIndex - 1);
         if (nextClue != null) {
@@ -549,7 +539,6 @@ public class Grid {
         GridField currentField = getField(column, index, start);
         int counter = clue.getHowMany();
 
-
         while (backwards ? fieldCounter >= max : fieldCounter <= max) {
             if (currentField.isCross()) {
                 counter = clue.getHowMany();
@@ -590,7 +579,6 @@ public class Grid {
                     return null;
                 }
                 positions[0] = nextPosition;
-
                 lastColor = currClue.getColor();
             } else {
                 int nextPosition = generateNextPosition(
@@ -612,7 +600,6 @@ public class Grid {
      * Used by {@link #generatePositionsArray(boolean, int)}
      */
     private int generateNextPosition(boolean column, int start, int index, ClueField clue, boolean backwards) {
-        int i = start;
         int counter = clue.getHowMany();
         int increment = backwards ? -1 : 1;
 
@@ -659,35 +646,29 @@ public class Grid {
     }
 
     private String getColInStringDetailed(int col) {
+        return getInStringDetailed(true, col);
+    }
+
+    private String getInStringDetailed(boolean column, int index) {
         StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < upperClues.getClueLength(col); i++) {
-            sb.append(upperClues.getClue(col, i).getColor()).append("|").append(upperClues.getClue(col, i).getHowMany()).append(" ");
+        Clues cluesUsed = column ? upperClues : leftClues;
+        for (int i = 0; i < cluesUsed.getClueLength(index); i++) {
+            sb.append(cluesUsed.getClue(index, i).getColor()).append("|").append(cluesUsed.getClue(index, i).getHowMany()).append(" ");
         }
 
         sb.append(" = ");
-        for (int i = 0; i < height; i++) {
-            if (grid[i][col].isCross()) {
+        for (int i = 0; i < (column ? height : width); i++) {
+            if ((column ? grid[i][index] : grid[index][i]).isCross()) {
                 sb.append("-");
-            } else
-                sb.append(grid[i][col].getColor());
+            } else {
+                sb.append((column ? grid[i][index] : grid[index][i]).getColor());
+            }
         }
         return sb.toString();
     }
 
     private String getRowInStringDetailed(int row) {
-        StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < leftClues.getClueLength(row); i++) {
-            sb.append(leftClues.getClue(row, i).getColor()).append("|").append(leftClues.getClue(row, i).getHowMany()).append(" ");
-        }
-
-        sb.append(" = ");
-        for (int i = 0; i < width; i++) {
-            if (grid[row][i].isCross()) {
-                sb.append("-");
-            } else
-                sb.append(grid[row][i].getColor());
-        }
-        return sb.toString();
+        return getInStringDetailed(false, row);
     }
 
     @Override
@@ -710,80 +691,24 @@ public class Grid {
         do {
             counter++;
             changed = generateBounds();
-            //printDifference();
             if (isComplete()) return true;
-            boolean currChanged;
-            currChanged = crossCompleted();
-            changed = currChanged || changed;
+            changed = crossCompleted() || changed;
             changed = fillSingles() || changed;
-            currChanged = crossLines();
-            changed = currChanged || changed;
+            changed = crossLines() || changed;
             crossFullLines();
             changed = fillObvious() || changed;
             if (isComplete()) return true;
             if (!isValid()) return false;
             if (counter > 500) {
-//                System.err.println("Timeout");
-//                System.err.flush();
                 return false;
             }
         } while (changed);
-        checkSolution();
+        //checkSolution();
         return false;
     }
 
-    /**
-     * Expects all completed clues and clueRows to be locked!
-     *
-     * @return heuristic best variable to change
-     */
-    CSPVariable getNextVariable() {
-        //TODO: IMPLEMENT better
-        for (int i = 0; i < height; i++) {
-            if (!leftClues.isComplete(i)) {
-                int j = 0;
-                while (leftClues.getClue(i, j) != null && leftClues.getClue(i, j).isDone()) {
-                    j++;
-                }
-                if (leftClues.getClue(i, j) == null) {
-                    leftClues.setComplete(i);
-                    continue;
-                }
-
-                int start = j != 0 ? leftClues.getClue(i, j - 1).getHigherEnd() + 1 : 0;
-                boolean after = false;
-
-                GridField currField = getField(false, i, start);
-                while (currField.isLocked()) {
-                    if (currField.getColor() == leftClues.getClue(i, j).getColor()) {
-                        after = true;
-                    }
-                    start++;
-                    currField = getField(false, i, start);
-                }
-                Queue<Character> colors = new FIFOQueue<Character>();
-                colors.offer(leftClues.getClue(i, j).getColor());
-                if (after) {
-                    if (leftClues.getClue(i, j + 1) != null) {
-                        colors.offer(leftClues.getClue(i, j + 1).getColor());
-                    }
-                } else {
-                    if (leftClues.getClue(i, j - 1) != null) {
-                        colors.offer(leftClues.getClue(i, j - 1).getColor());
-                    }
-                }
-                colors.offer('_');
-                return new CSPVariable(currField, colors);
-            }
-
-        }
-
-
-        return null;
-    }
-
     CSPVariableClue findNextVariable() {
-        CSPVariableClue returning = null;
+        CSPVariableClue returning;
         ClueField cf;
         for (int i = 0; i < leftClues.getClueLength(); i++) {
             if (leftClues.isComplete(i)) continue;
@@ -796,7 +721,7 @@ public class Grid {
             }
             leftClues.setComplete(i);
         }
-        return returning;
+        return null;
     }
 
     private void fillCSPDomain(CSPVariableClue returning) {
@@ -885,10 +810,8 @@ public class Grid {
                     fieldToAdd.setLocked(true);
                 }
             }
-
             fieldCounter = 0;
         }
-
         return changed;
     }
 
@@ -1078,90 +1001,54 @@ public class Grid {
         return changed;
     }
 
-    private String getInStringDetailed(boolean column, int index) {
-        if (column) {
-            return getColInString(index);
-        } else return getRowInString(index);
+    private void crossFullLine(boolean column, int index) {
+        Clues cluesUsed = column ? upperClues : leftClues;
+        int max = column ? height : width;
+        if (cluesUsed.isComplete(index)) return;
+        ArrayList<Integer> lowers = new ArrayList<Integer>();
+        ArrayList<Integer> highers = new ArrayList<Integer>();
+        boolean full = true;
+        char lastColor = 0;
+        boolean inColor = false;
+        for (int i = 0; i < max; i++) {
+            if (!getField(column, index, i).isLocked()) {
+                full = false;
+                break;
+            } else if (inColor) {
+                if (getField(column, index, i).isCross()) {
+                    highers.add(i - 1);
+                    inColor = false;
+                    lastColor = '_';
+                } else if (getField(column, index, i).getColor() != lastColor) {
+                    highers.add(i - 1);
+                    lowers.add(i);
+                    lastColor = getField(column, index, i).getColor();
+                }
+            } else if (getField(column, index, i).isCross()) {
+                inColor = true;
+                lowers.add(i);
+                lastColor = getField(column, index, i).getColor();
+            }
+        }
+
+        if (full) {
+            if (highers.size() < lowers.size()) {
+                highers.add(max - 1);
+            }
+            if (highers.size() == cluesUsed.getClueLength(index)) {
+                cluesUsed.setCluesDone(index, lowers, highers);
+            }
+        }
     }
 
     private void crossFullLines() {
         for (int y = 0; y < height; y++) {
-            if (leftClues.isComplete(y)) continue;
-
-            ArrayList<Integer> lowers = new ArrayList<Integer>();
-            ArrayList<Integer> highers = new ArrayList<Integer>();
-            boolean full = true;
-            char lastColor = 0;
-            boolean inColor = false;
-            for (int x = 0; x < width; x++) {
-                if (!grid[y][x].isLocked()) {
-                    full = false;
-                    break;
-                } else if (inColor) {
-                    if (grid[y][x].isCross()) {
-                        highers.add(x - 1);
-                        inColor = false;
-                        lastColor = '_';
-                    } else if (grid[y][x].getColor() != lastColor) {
-                        highers.add(x - 1);
-                        lowers.add(x);
-                        lastColor = grid[y][x].getColor();
-                    }
-                } else if (!grid[y][x].isCross()) {
-                    inColor = true;
-                    lowers.add(x);
-                    lastColor = grid[y][x].getColor();
-                }
-            }
-
-            if (full) {
-                if (highers.size() < lowers.size()) {
-                    highers.add(width - 1);
-                }
-                if (highers.size() == leftClues.getClueLength(y))
-                    leftClues.setCluesDone(y, lowers, highers);
-            }
+            crossFullLine(false, y);
         }
 
         for (int x = 0; x < width; x++) {
-            if (upperClues.isComplete(x)) continue;
-
-            ArrayList<Integer> lowers = new ArrayList<Integer>();
-            ArrayList<Integer> highers = new ArrayList<Integer>();
-            boolean full = true;
-            char lastColor = 0;
-            boolean inColor = false;
-            for (int y = 0; y < height; y++) {
-                if (!grid[y][x].isLocked()) {
-                    full = false;
-                    break;
-                } else if (inColor) {
-                    if (grid[y][x].isCross()) {
-                        highers.add(y - 1);
-                        inColor = false;
-                        lastColor = '_';
-                    } else if (grid[y][x].getColor() != lastColor) {
-                        highers.add(y - 1);
-                        lowers.add(y);
-                        lastColor = grid[y][x].getColor();
-                    }
-                } else if (!grid[y][x].isCross()) {
-                    inColor = true;
-                    lowers.add(y);
-                    lastColor = grid[y][x].getColor();
-                }
-            }
-
-            if (full) {
-                if (highers.size() < lowers.size()) {
-                    highers.add(height - 1);
-                }
-                if (highers.size() == upperClues.getClueLength(x))
-                    upperClues.setCluesDone(x, lowers, highers);
-            }
+            crossFullLine(true, x);
         }
-
-
     }
 
     private boolean checkSolution() {
@@ -1173,9 +1060,6 @@ public class Grid {
             for (int x = 0; x < line.length(); x++) {
                 if (line.charAt(x) != solution.charAt(stringCounter++)) {
                     if (!grid[y][x].isSpace()) {
-                        //LOGGER.severe("Invalid solution! Expected: " + solution.charAt(stringCounter - 1) + ", got: " +
-                        //        line.charAt(x) + ", at x=" + x + ", y=" + y);
-                        //valid = false;
                         return false;
                     }
                 }
@@ -1255,7 +1139,6 @@ public class Grid {
                     }
                 }
                 return false;
-
             }
 
             if (counter == 0) {
@@ -1296,6 +1179,7 @@ public class Grid {
         while (currentField != null && currentField.getColor() == '_')
             currentField = getField(column, index, ++fieldCounter);
         if (currentField == null) return true;
+
         char colorToFind = currentField.getColor();
         int lengthToFind = getBlockSize(column, index, fieldCounter, false);
 
@@ -1307,7 +1191,6 @@ public class Grid {
             }
         }
 
-        //TODO: Check for values in between bounds... Upper bound might be wrongly set
         return true;
     }
 
@@ -1315,7 +1198,6 @@ public class Grid {
      * Squish, stretch so that colors fit the real line and then stretch according to crosses.
      * If any color doesnt fit in the space, it is invalid
      */
-    //TODO: Rewrite this, might be inconsistent
     public boolean isValid(boolean column, int index) {
         Clues cluesUsed = column ? upperClues : leftClues;
         if (!cluesUsed.isValid()) return false;
@@ -1327,7 +1209,7 @@ public class Grid {
         return isValidIterate(column, index, lowers, uppers, 0, 0);
     }
 
-    public void fillVariable(CSPVariableClue nextVariableClue) {
+    void fillVariable(CSPVariableClue nextVariableClue) {
         int prevEnd = 0;
         if (nextVariableClue.getIndex() > 0) {
             prevEnd = leftClues.getClue(nextVariableClue.getLine(), nextVariableClue.getIndex() - 1).getHigherEnd() + 1;

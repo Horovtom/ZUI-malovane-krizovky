@@ -18,8 +18,8 @@ import java.util.StringTokenizer;
  *
  * Jelikož v kódu řešitele chybí pár kousků (není tedy dokonalý), naimplementoval jsem CSP.
  * Kvůli struktuře, kterou jsem pro řešitele zvolil, bylo dle mého názoru nejvýhodnější:
- *  proměnné - buňky
- *  domény - validní barvy, které může buňka mít
+ *  proměnné - první buňka bloku clue
+ *  domény - validní místa, která mohou být první buňkou
  *  constraint - provádí řešitel, pomocí detekce nesprávného řešení
  *
  * Pokud bych měl naimplementovat pouze CSP řešitele těchto křížovek, použil bych nejspíše o něco jinou reprezentaci:
@@ -28,7 +28,11 @@ import java.util.StringTokenizer;
  *  constraint - součty (proměnných v řádku/sloupci) + sum(blockSize) == width/height
  *             - validita křížem + mezi bloky stejné barvy musí být >= 1
  *
- * Tato reprezentace je pro čisté CSP výhodnější, ovšem můj řešitel používá pro svůj chod reprezantaci buňkovou.
+ * Tato reprezentace je pro čisté CSP výhodnější.
+ *
+ * Můj řešitel extenduje AC3, ve výsledku neprořezává jen množinu domén jednotlivých proměnných, ale prořezává i
+ * počet proměnných samotných.
+ *
  */
 public class CSPMain {
     //private static final Logger LOGGER = Logger.getLogger(CSPMain.class.getName());
@@ -39,7 +43,6 @@ public class CSPMain {
     public static void main(String[] args) {
         parseInput(System.in);
         printResult();
-
     }
 
     public static void parseInput(InputStream is) {

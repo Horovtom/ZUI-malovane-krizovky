@@ -13,24 +13,25 @@ public class GridField {
     private ArrayList<Character> savedColor = new ArrayList<Character>();
     private ArrayList<Boolean> savedLocked = new ArrayList<Boolean>();
 
-    public GridField() {}
+    GridField() {
+    }
 
     public char getColor() {
         return color;
     }
 
-    public boolean isLocked() {
+    boolean isLocked() {
         return locked;
     }
 
-    public void setLocked(boolean locked) {
+    void setLocked(boolean locked) {
         this.locked = locked;
     }
 
     /**
      * @return if it set NEW color...
      */
-    public boolean setColor(char color) {
+    boolean setColor(char color) {
         if (this.color == color) return false;
         //if (locked) LOGGER.warning("Trying to set locked cell... Doing so...");
         this.color = color;
@@ -46,7 +47,7 @@ public class GridField {
                 '}';
     }
 
-    public boolean isCross() {
+    boolean isCross() {
         return color == '_' && locked;
     }
 
@@ -72,35 +73,30 @@ public class GridField {
         return result;
     }
 
-    public boolean crossOut() {
+    boolean crossOut() {
         if (isCross()) return false;
         color = '_';
         locked = true;
         return true;
     }
 
-    public boolean isSpace() {
+    boolean isSpace() {
         return color == '_' && !locked;
     }
 
-    public void save() {
+    void save() {
         savedColor.add(color);
         savedLocked.add(locked);
     }
 
-    public void load() {
+    void load() {
         locked = savedLocked.get(savedLocked.size() - 1);
         savedLocked.remove(savedLocked.size() - 1);
         color = savedColor.get(savedColor.size() - 1);
         savedColor.remove(savedColor.size() - 1);
     }
 
-    public void setColorLocked(char color) {
-        this.color = color;
-        this.locked = true;
-    }
-
-    public boolean colored() {
+    boolean colored() {
         return color != '_';
     }
 }
