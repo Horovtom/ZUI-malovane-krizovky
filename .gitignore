@@ -22,6 +22,8 @@ hs_err_pid*
 .idea/dictionaries
 .idea/vcs.xml
 .idea/jsLibraryMappings.xml
+/target
+/src/jencidus
 
 # Sensitive or high-churn files:
 .idea/dataSources.ids
@@ -61,3 +63,6 @@ fabric.properties
 .gitignore
 .idea/
 ZUI-malovane-krizovky.iml
+src/jencidus/
+src/student.zip
+target/
