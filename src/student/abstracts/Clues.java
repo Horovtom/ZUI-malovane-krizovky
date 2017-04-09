@@ -2,7 +2,10 @@ package student.abstracts;
 
 import student.ClueField;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.StringTokenizer;
 import java.util.logging.Logger;
 
 /**
@@ -10,18 +13,18 @@ import java.util.logging.Logger;
  */
 public abstract class Clues {
     private static final Logger LOGGER = Logger.getLogger(Clues.class.getName());
-    protected ArrayList<ArrayList<ClueField>> clues = new ArrayList<>();
-    private ArrayList<Boolean> completed = new ArrayList<>();
+    protected ArrayList<ArrayList<ClueField>> clues = new ArrayList<ArrayList<ClueField>>();
+    private ArrayList<Boolean> completed = new ArrayList<Boolean>();
     private boolean complete = false;
-    private final ArrayList<Collection<ClueField>> singleColors = new ArrayList<>();
-    private ArrayList<ArrayList<Boolean>> savedCompleted = new ArrayList<>();
+    private final ArrayList<Collection<ClueField>> singleColors = new ArrayList<Collection<ClueField>>();
+    private ArrayList<ArrayList<Boolean>> savedCompleted = new ArrayList<ArrayList<Boolean>>();
     private boolean valid;
 
     public Clues() {
     }
 
     public void save() {
-        ArrayList<Boolean> currentCompleted = new ArrayList<>();
+        ArrayList<Boolean> currentCompleted = new ArrayList<Boolean>();
         currentCompleted.addAll(completed);
         savedCompleted.add(currentCompleted);
 
@@ -54,9 +57,9 @@ public abstract class Clues {
 
     public void finalizeCreation() {
         for (ArrayList<ClueField> clue : clues) {
-            ArrayList<Character> colors = new ArrayList<>();
-            HashMap<Character, ClueField> saved = new HashMap<>();
-            ArrayList<Character> removed = new ArrayList<>();
+            ArrayList<Character> colors = new ArrayList<Character>();
+            HashMap<Character, ClueField> saved = new HashMap<Character, ClueField>();
+            ArrayList<Character> removed = new ArrayList<Character>();
             for (ClueField aClue : clue) {
                 if (!removed.contains(aClue.getColor())) {
                     if (colors.contains(aClue.getColor())) {
@@ -78,7 +81,7 @@ public abstract class Clues {
     public void addLineOfClues(String input) {
         StringTokenizer st = new StringTokenizer(input, ",");
 
-        if (Objects.equals(input, "")) {
+        if (input.equals("")) {
             addColumn(true);
         } else {
             addColumn();
@@ -114,7 +117,7 @@ public abstract class Clues {
     }
 
     private void addColumn(boolean complete) {
-        clues.add(new ArrayList<>());
+        clues.add(new ArrayList<ClueField>());
         completed.add(complete);
     }
 

@@ -14,8 +14,8 @@ public class ClueField {
     private boolean done = false;
     private int lowerEnd, higherEnd;
 
-    private ArrayList<Boolean> savedDone = new ArrayList<>();
-    private ArrayList<int[]> savedBounds = new ArrayList<>();
+    private ArrayList<Boolean> savedDone = new ArrayList<Boolean>();
+    private ArrayList<int[]> savedBounds = new ArrayList<int[]>();
     private boolean valid = true;
 
     public ClueField(char color, int howMany) {

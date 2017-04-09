@@ -11,8 +11,8 @@ public class GridField {
     private char color='_';
     private boolean locked = false;
 
-    private ArrayList<Character> savedColor = new ArrayList<>();
-    private ArrayList<Boolean> savedLocked = new ArrayList<>();
+    private ArrayList<Character> savedColor = new ArrayList<Character>();
+    private ArrayList<Boolean> savedLocked = new ArrayList<Boolean>();
 
     public GridField() {}
 

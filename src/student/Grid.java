@@ -1,7 +1,5 @@
-
 package student;
 
-import fr.emse.ai.util.FIFOQueue;
 import student.abstracts.Clues;
 
 import java.util.ArrayList;
@@ -803,7 +801,7 @@ public class Grid {
                     start++;
                     currField = getField(false, i, start);
                 }
-                Queue<Character> colors = new FIFOQueue<>();
+                Queue<Character> colors = new FIFOQueue<Character>();
                 colors.offer(leftClues.getClue(i, j).getColor());
                 if (after) {
                     if (leftClues.getClue(i, j + 1) != null) {
@@ -1083,8 +1081,8 @@ public class Grid {
         for (int y = 0; y < height; y++) {
             if (leftClues.isComplete(y)) continue;
 
-            ArrayList<Integer> lowers = new ArrayList<>();
-            ArrayList<Integer> highers = new ArrayList<>();
+            ArrayList<Integer> lowers = new ArrayList<Integer>();
+            ArrayList<Integer> highers = new ArrayList<Integer>();
             boolean full = true;
             char lastColor = 0;
             boolean inColor = false;
@@ -1121,8 +1119,8 @@ public class Grid {
         for (int x = 0; x < width; x++) {
             if (upperClues.isComplete(x)) continue;
 
-            ArrayList<Integer> lowers = new ArrayList<>();
-            ArrayList<Integer> highers = new ArrayList<>();
+            ArrayList<Integer> lowers = new ArrayList<Integer>();
+            ArrayList<Integer> highers = new ArrayList<Integer>();
             boolean full = true;
             char lastColor = 0;
             boolean inColor = false;

@@ -7,7 +7,7 @@ import java.util.ArrayList;
  */
 public class CSP {
     private final Grid grid;
-    private ArrayList<String> solutions = new ArrayList<>();
+    private ArrayList<String> solutions = new ArrayList<String>();
 
     public CSP(Grid grid) {
         this.grid = grid;
@@ -21,8 +21,12 @@ public class CSP {
     }
 
     private void refactorSolutions() {
-        ArrayList<String> newSolutions = new ArrayList<>();
-        solutions.stream().filter(solution -> !newSolutions.contains(solution)).forEach(newSolutions::add);
+        ArrayList<String> newSolutions = new ArrayList<String>();
+        for (int i = 0; i < solutions.size(); i++) {
+            if (!newSolutions.contains(solutions.get(i)))
+                newSolutions.add(solutions.get(i));
+        }
+        //solutions.stream().filter(solution -> !newSolutions.contains(solution)).forEach(newSolutions::add);
         solutions = newSolutions;
     }
 

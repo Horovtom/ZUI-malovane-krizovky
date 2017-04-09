@@ -15,7 +15,7 @@ public class CSPMain {
     private static final Logger LOGGER = Logger.getLogger(CSPMain.class.getName());
     private static Grid grid = null;
     private static String solution = null;
-    private static ArrayList<String> results = new ArrayList<>();
+    private static ArrayList<String> results = new ArrayList<String>();
 
     public static void main(String[] args) {
         parseInput(System.in);
@@ -63,11 +63,11 @@ public class CSPMain {
             results.add(grid.toString());
         }
 
-        System.out.println("Solved in: " + (System.currentTimeMillis() - myTime) + "ms.");
+//        System.out.println("Solved in: " + (System.currentTimeMillis() - myTime) + "ms.");
     }
 
     public static void printResult() {
-        System.out.println(results.size());
+//        System.out.println(results.size());
         for (int i = 0; i < results.size(); i++) {
             System.out.println(results.get(i));
         }
