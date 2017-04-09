@@ -1024,7 +1024,7 @@ public class Grid {
                     lowers.add(i);
                     lastColor = getField(column, index, i).getColor();
                 }
-            } else if (getField(column, index, i).isCross()) {
+            } else if (getField(column, index, i).colored()) {
                 inColor = true;
                 lowers.add(i);
                 lastColor = getField(column, index, i).getColor();
@@ -1070,7 +1070,7 @@ public class Grid {
 
     private void printDifference() {
         if (solution == null) return;
-        if (!checkSolution()) return;
+//        if (!checkSolution()) return;
 
         int counter = 0;
         int stringCounter = 0;
@@ -1092,6 +1092,7 @@ public class Grid {
         }
         System.out.println("DIFFERENCE: " + counter);
         System.out.println("\n-----------\n");
+        System.out.flush();
     }
 
     public void loadSolution(String string) {
