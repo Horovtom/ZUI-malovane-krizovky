@@ -39,11 +39,12 @@ public class CSP {
             return;
         }
 
-        CSPVariable nextVariable = grid.getNextVariable();
+        CSPVariableClue nextVariableClue = grid.findNextVariable();
 
-        while (nextVariable.getDomain().size() > 0) {
+        if (nextVariableClue == null) return;
+        while (nextVariableClue.domainSize() > 0) {
             grid.save();
-            nextVariable.getField().setColorLocked(nextVariable.getDomain().poll());
+            grid.fillVariable(nextVariableClue);
             if (grid.solve()) {
                 solutions.add(grid.toString());
             } else if (grid.isValid()) {
@@ -51,7 +52,6 @@ public class CSP {
             }
             grid.load();
         }
-
     }
 
 }

@@ -17,6 +17,7 @@ public class GridTest {
 
     @Before
     public void setUp() throws Exception {
+        CSPMain.reset();
         LeftClues lc = new LeftClues();
         UpperClues uc = new UpperClues();
         lc.addLineOfClues("B,1,B,1");
@@ -33,14 +34,14 @@ public class GridTest {
     @Test
     public void test_Stingray() throws Exception {
         CSPMain.reset();
-        CSPMain.setSolution(new BufferedReader(new FileReader(new File("/home/lactosis/Documents/Programming/Java/JAG/ZUI-malovane-krizovky/src/student/examples/Stingray.out.txt"))));
-        CSPMain.parseInput(new FileInputStream(new File("/home/lactosis/Documents/Programming/Java/JAG/ZUI-malovane-krizovky/src/student/examples/Stingray.txt")));
+        CSPMain.setSolution(new BufferedReader(new FileReader(new File("D:\\Programming\\Java\\ZUI-malovane-krizovky\\src\\student\\examples\\Stingray.out.txt"))));
+        CSPMain.parseInput(new FileInputStream(new File("D:\\Programming\\Java\\ZUI-malovane-krizovky\\src\\student\\examples\\Stingray.txt")));
         ArrayList<String> result = CSPMain.getResult();
         assertEquals(1, result.size());
         String resultString = result.get(0);
         StringReader reader = new StringReader(resultString);
         BufferedReader bufferedReader = new BufferedReader(reader);
-        BufferedReader expected = new BufferedReader(new FileReader(new File("/home/lactosis/Documents/Programming/Java/JAG/ZUI-malovane-krizovky/src/student/examples/Stingray.out.txt")));
+        BufferedReader expected = new BufferedReader(new FileReader(new File("D:\\Programming\\Java\\ZUI-malovane-krizovky\\src\\student\\examples\\Stingray.out.txt")));
         String line;
         while (bufferedReader.ready() && expected.ready()) {
             line = expected.readLine();
@@ -239,33 +240,33 @@ public class GridTest {
 
     }
 
-    @Test
-    public void testLeafManual() throws Exception {
-        String result = "_________B\n" +
-                "___BBBB_BB\n" +
-                "__B___BB__\n" +
-                "_BBBBBB_B_\n" +
-                "B____BB_B_\n" +
-                "BBBBB_B_B_\n" +
-                "B__BB_B_B_\n" +
-                "BBB_B_BB__\n" +
-                "B_BBBBB___\n" +
-                "BB________";
-
-        StringReader sr = new StringReader(result);
-        BufferedReader br = new BufferedReader(sr);
-
-        assertEquals("____BBBBBB", br.readLine());
-        assertEquals("___B_B_B_B", br.readLine());
-        assertEquals("__BB_B_BB_", br.readLine());
-        assertEquals("_B_B_BB_B_", br.readLine());
-        assertEquals("_B_B_BBBB_", br.readLine());
-        assertEquals("_B_BB___B_", br.readLine());
-        assertEquals("_BBBBBBBB_", br.readLine());
-        assertEquals("__B____B__", br.readLine());
-        assertEquals("_B_BBBB___", br.readLine());
-        assertEquals("BB________", br.readLine());
-    }
+//    @Test
+//    public void testLeafManual() throws Exception {
+//        String result = "_________B\n" +
+//                "___BBBB_BB\n" +
+//                "__B___BB__\n" +
+//                "_BBBBBB_B_\n" +
+//                "B____BB_B_\n" +
+//                "BBBBB_B_B_\n" +
+//                "B__BB_B_B_\n" +
+//                "BBB_B_BB__\n" +
+//                "B_BBBBB___\n" +
+//                "BB________";
+//
+//        StringReader sr = new StringReader(result);
+//        BufferedReader br = new BufferedReader(sr);
+//
+//        assertEquals("____BBBBBB", br.readLine());
+//        assertEquals("___B_B_B_B", br.readLine());
+//        assertEquals("__BB_B_BB_", br.readLine());
+//        assertEquals("_B_B_BB_B_", br.readLine());
+//        assertEquals("_B_B_BBBB_", br.readLine());
+//        assertEquals("_B_BB___B_", br.readLine());
+//        assertEquals("_BBBBBBBB_", br.readLine());
+//        assertEquals("__B____B__", br.readLine());
+//        assertEquals("_B_BBBB___", br.readLine());
+//        assertEquals("BB________", br.readLine());
+//    }
 
     @Test
     public void leaf10x10() throws Exception {
@@ -327,14 +328,14 @@ public class GridTest {
     @Test
     public void test_tobaccoPipe() throws Exception {
         CSPMain.reset();
-        CSPMain.setSolution(new BufferedReader(new FileReader(new File("/home/lactosis/Documents/Programming/Java/JAG/ZUI-malovane-krizovky/src/student/examples/tobaccoPipe.out.txt"))));
-        CSPMain.parseInput(new FileInputStream(new File("/home/lactosis/Documents/Programming/Java/JAG/ZUI-malovane-krizovky/src/student/examples/tobaccoPipe.txt")));
+        CSPMain.setSolution(new BufferedReader(new FileReader(new File("D:\\Programming\\Java\\ZUI-malovane-krizovky\\src\\student\\examples\\tobaccoPipe.out.txt"))));
+        CSPMain.parseInput(new FileInputStream(new File("D:\\Programming\\Java\\ZUI-malovane-krizovky\\src\\student\\examples\\tobaccoPipe.txt")));
         ArrayList<String> result = CSPMain.getResult();
         assertEquals(1, result.size());
         String resultString = result.get(0);
         StringReader reader = new StringReader(resultString);
         BufferedReader bufferedReader = new BufferedReader(reader);
-        BufferedReader expected = new BufferedReader(new FileReader(new File("/home/lactosis/Documents/Programming/Java/JAG/ZUI-malovane-krizovky/src/student/examples/tobaccoPipe.out.txt")));
+        BufferedReader expected = new BufferedReader(new FileReader(new File("D:\\Programming\\Java\\ZUI-malovane-krizovky\\src\\student\\examples\\tobaccoPipe.out.txt")));
         String line;
         while (bufferedReader.ready() && expected.ready()) {
             line = expected.readLine();
@@ -347,14 +348,14 @@ public class GridTest {
     @Test
     public void test_csp_example() throws Exception {
         CSPMain.reset();
-        CSPMain.setSolution(new BufferedReader(new FileReader(new File("/home/lactosis/Documents/Programming/Java/JAG/ZUI-malovane-krizovky/src/student/examples/csp_example.txt.out.txt"))));
-        CSPMain.parseInput(new FileInputStream(new File("/home/lactosis/Documents/Programming/Java/JAG/ZUI-malovane-krizovky/src/student/examples/csp_example.txt")));
+        CSPMain.setSolution(new BufferedReader(new FileReader(new File("D:\\Programming\\Java\\ZUI-malovane-krizovky\\src\\student\\examples\\csp_example.txt.out.txt"))));
+        CSPMain.parseInput(new FileInputStream(new File("D:\\Programming\\Java\\ZUI-malovane-krizovky\\src\\student\\examples\\csp_example.txt")));
         String result = CSPMain.getResult().get(0);
         assertFalse(result == null);
         StringReader reader = new StringReader(result);
         BufferedReader bufferedReader = new BufferedReader(reader);
         System.out.println("Got: \n" + result + "\nShould be:");
-        BufferedReader expected = new BufferedReader(new FileReader(new File("/home/lactosis/Documents/Programming/Java/JAG/ZUI-malovane-krizovky/src/student/examples/csp_example.txt.out.txt")));
+        BufferedReader expected = new BufferedReader(new FileReader(new File("D:\\Programming\\Java\\ZUI-malovane-krizovky\\src\\student\\examples\\csp_example.txt.out.txt")));
         String line;
         while (bufferedReader.ready() && expected.ready()) {
             line = expected.readLine();
@@ -367,7 +368,7 @@ public class GridTest {
 
     @Test
     public void MANUAL_test_SimpleMultiSol() throws Exception {
-        CSPMain.parseInput(new FileInputStream(new File("/home/lactosis/Documents/Programming/Java/JAG/ZUI-malovane-krizovky/src/student/examples/SimpleMultiline.txt")));
+        CSPMain.parseInput(new FileInputStream(new File("D:\\Programming\\Java\\ZUI-malovane-krizovky\\src\\student\\examples\\SimpleMultiline.txt")));
         CSPMain.printResult();
     }
 
@@ -417,14 +418,14 @@ public class GridTest {
 
     @Test
     public void test_krtek() throws Exception {
-        CSPMain.setSolution(new BufferedReader(new FileReader(new File("/home/lactosis/Documents/Programming/Java/JAG/ZUI-malovane-krizovky/src/student/examples/krtek.txt.out.txt"))));
-        CSPMain.parseInput(new FileInputStream(new File("/home/lactosis/Documents/Programming/Java/JAG/ZUI-malovane-krizovky/src/student/examples/krtek.txt")));
+        CSPMain.setSolution(new BufferedReader(new FileReader(new File("D:\\Programming\\Java\\ZUI-malovane-krizovky\\src\\student\\examples\\krtek.txt.out.txt"))));
+        CSPMain.parseInput(new FileInputStream(new File("D:\\Programming\\Java\\ZUI-malovane-krizovky\\src\\student\\examples\\krtek.txt")));
         String result = CSPMain.getResult().get(0);
         assertFalse(result == null);
         StringReader reader = new StringReader(result);
         BufferedReader bufferedReader = new BufferedReader(reader);
         System.out.println("Got: \n" + result + "\nShould be:");
-        BufferedReader expected = new BufferedReader(new FileReader(new File("/home/lactosis/Documents/Programming/Java/JAG/ZUI-malovane-krizovky/src/student/examples/krtek.txt.out.txt")));
+        BufferedReader expected = new BufferedReader(new FileReader(new File("D:\\Programming\\Java\\ZUI-malovane-krizovky\\src\\student\\examples\\krtek.txt.out.txt")));
         String line;
         while (bufferedReader.ready() && expected.ready()) {
             line = expected.readLine();
@@ -441,14 +442,14 @@ public class GridTest {
 
     @Test
     public void test_dino() throws Exception {
-        CSPMain.setSolution(new BufferedReader(new FileReader(new File("/home/lactosis/Documents/Programming/Java/JAG/ZUI-malovane-krizovky/src/student/examples/dino.out.txt"))));
-        CSPMain.parseInput(new FileInputStream(new File("/home/lactosis/Documents/Programming/Java/JAG/ZUI-malovane-krizovky/src/student/examples/dino.txt")));
+        CSPMain.setSolution(new BufferedReader(new FileReader(new File("D:\\Programming\\Java\\ZUI-malovane-krizovky\\src\\student\\examples\\dino.out.txt"))));
+        CSPMain.parseInput(new FileInputStream(new File("D:\\Programming\\Java\\ZUI-malovane-krizovky\\src\\student\\examples\\dino.txt")));
         String result = CSPMain.getResult().get(0);
         assertFalse(result == null);
         StringReader reader = new StringReader(result);
         BufferedReader bufferedReader = new BufferedReader(reader);
         System.out.println("Got: \n" + result + "\nShould be:");
-        BufferedReader expected = new BufferedReader(new FileReader(new File("/home/lactosis/Documents/Programming/Java/JAG/ZUI-malovane-krizovky/src/student/examples/dino.out.txt")));
+        BufferedReader expected = new BufferedReader(new FileReader(new File("D:\\Programming\\Java\\ZUI-malovane-krizovky\\src\\student\\examples\\dino.out.txt")));
         String line;
         while (bufferedReader.ready() && expected.ready()) {
             line = expected.readLine();

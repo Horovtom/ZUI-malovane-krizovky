@@ -8,10 +8,13 @@ import java.util.Queue;
  * Artificial Intelligence A Modern Approach (3rd Edition): pg 80.<br>
  * <br>
  * First-in, first-out or FIFO queue, which pops the oldest element of the
- * queue;
+ * queue and keeps elements unique;
+ *
  *
  * @author Ravi Mohan
  * @author Ciaran O'Reilly
+ * Modification by:
+ * @author Tomáš Hořovský
  */
 public class FIFOQueue<E> extends LinkedList<E> implements Queue<E> {
     private static final long serialVersionUID = 1;
@@ -38,7 +41,14 @@ public class FIFOQueue<E> extends LinkedList<E> implements Queue<E> {
         this.addLast(element);
     }
 
+    @Override
+    public boolean offer(E e) {
+        return !contains(e) && super.offer(e);
+    }
+
     public Queue<E> insert(E element) {
+        if (contains(element)) return this;
+
         if (offer(element)) {
             return this;
         }

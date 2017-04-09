@@ -9,6 +9,26 @@ import java.util.StringTokenizer;
 
 /**
  * Created by Hermes235 on 30.3.2017.
+ *
+ * Dobrý den vážený čtenáři...
+ * I přes to, že zadání mířilo na jednoduché CSP backtracking a AC3 algoritmus, zvolil jsem poněkud těžkopádnější cestu.
+ * Napsal jsem řešitele, který doplní buňky, které jsou jednoznačné.
+ * Většina kódu tohoto řešitele je poměrně neefektivně a nepřehledně napsána ve třídě Grid. Podotýkám, že jsem tento kód
+ * v tomto stavu zanechal kvůli časové tísni, doufaje, že nikdo nebude cítit povinnost tomuto kódu porozumět.
+ *
+ * Jelikož v kódu řešitele chybí pár kousků (není tedy dokonalý), naimplementoval jsem CSP.
+ * Kvůli struktuře, kterou jsem pro řešitele zvolil, bylo dle mého názoru nejvýhodnější:
+ *  proměnné - buňky
+ *  domény - validní barvy, které může buňka mít
+ *  constraint - provádí řešitel, pomocí detekce nesprávného řešení
+ *
+ * Pokud bych měl naimplementovat pouze CSP řešitele těchto křížovek, použil bych nejspíše o něco jinou reprezentaci:
+ *  proměnné - počty mezer mezi bloky s barvami
+ *  domény - integery < width - sum(blockSize) && integery >= 0
+ *  constraint - součty (proměnných v řádku/sloupci) + sum(blockSize) == width/height
+ *             - validita křížem + mezi bloky stejné barvy musí být >= 1
+ *
+ * Tato reprezentace je pro čisté CSP výhodnější, ovšem můj řešitel používá pro svůj chod reprezantaci buňkovou.
  */
 public class CSPMain {
     //private static final Logger LOGGER = Logger.getLogger(CSPMain.class.getName());

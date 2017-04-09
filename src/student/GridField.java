@@ -23,6 +23,10 @@ public class GridField {
         return locked;
     }
 
+    public void setLocked(boolean locked) {
+        this.locked = locked;
+    }
+
     /**
      * @return if it set NEW color...
      */
@@ -32,10 +36,6 @@ public class GridField {
         this.color = color;
         this.locked = true;
         return true;
-    }
-
-    public void setLocked(boolean locked) {
-        this.locked = locked;
     }
 
     @Override
@@ -98,5 +98,9 @@ public class GridField {
     public void setColorLocked(char color) {
         this.color = color;
         this.locked = true;
+    }
+
+    public boolean colored() {
+        return color != '_';
     }
 }

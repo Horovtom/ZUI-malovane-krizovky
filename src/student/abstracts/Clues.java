@@ -11,11 +11,11 @@ import java.util.StringTokenizer;
  * Created by Hermes235 on 30.3.2017.
  */
 public abstract class Clues {
+    private final ArrayList<Collection<ClueField>> singleColors = new ArrayList<Collection<ClueField>>();
     //private static final Logger LOGGER = Logger.getLogger(Clues.class.getName());
     protected ArrayList<ArrayList<ClueField>> clues = new ArrayList<ArrayList<ClueField>>();
     private ArrayList<Boolean> completed = new ArrayList<Boolean>();
     private boolean complete = false;
-    private final ArrayList<Collection<ClueField>> singleColors = new ArrayList<Collection<ClueField>>();
     private ArrayList<ArrayList<Boolean>> savedCompleted = new ArrayList<ArrayList<Boolean>>();
     private boolean valid;
 
@@ -37,7 +37,7 @@ public abstract class Clues {
     public void load() {
         //if (savedCompleted.size() == 0) LOGGER.severe("Nothing to load!");
         completed = savedCompleted.get(savedCompleted.size() - 1);
-        savedCompleted.remove(completed);
+        savedCompleted.remove(savedCompleted.size() - 1);
 
         for (ArrayList<ClueField> clue : clues) {
             for (ClueField clueField : clue) {
@@ -97,14 +97,6 @@ public abstract class Clues {
                 loadingColor = true;
             }
         }
-    }
-
-    public void setComplete(int column) {
-        if (column < 0 || column >= completed.size()) {
-            //LOGGER.warning("Trying to access non-existent column");
-            return;
-        }
-        completed.set(column, true);
     }
 
     public boolean isComplete(int column) {
@@ -220,6 +212,14 @@ public abstract class Clues {
             }
         }
         return complete;
+    }
+
+    public void setComplete(int column) {
+        if (column < 0 || column >= completed.size()) {
+            //LOGGER.warning("Trying to access non-existent column");
+            return;
+        }
+        completed.set(column, true);
     }
 
     public void setCluesDone(int index, ArrayList<Integer> lowers, ArrayList<Integer> highers) {
